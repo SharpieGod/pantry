@@ -7,8 +7,8 @@ const Navbar = async () => {
   const session = await getServerAuthSession();
 
   return (
-    <nav className="flex h-20 w-auto px-24 items-center justify-between text-xl bg-background-900/80">
-      <Link href="/" className="text-3xl font-bold text-red-500 ">
+    <nav className="flex h-20 w-auto items-center justify-between bg-[#F8F0C7] px-24 text-xl">
+      <Link href="/" className="text-3xl font-bold text-red-500">
         pantry.
       </Link>
 
@@ -21,7 +21,7 @@ const Navbar = async () => {
         {session ? (
           <>
             <NavLink href="/post/new">Make Posting</NavLink>
-            <NavLink href="api/auth/signout" variant="secondary">
+            <NavLink href="/api/auth/signout" variant="secondary">
               Logout
             </NavLink>
           </>

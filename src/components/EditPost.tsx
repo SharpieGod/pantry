@@ -10,6 +10,7 @@ import SelectElement from "./Custom/SelectElement";
 import { UploadButton } from "~/utils/uploadthing";
 import { OurFileRouter } from "~/app/api/uploadthing/core";
 import DarkoButton from "./Custom/DarkoButton";
+import Image from "next/image";
 
 interface EditPostProps {
   defaultPost: Post;
@@ -130,7 +131,6 @@ const EditPost: FC<EditPostProps> = ({ defaultPost }) => {
 
           <DarkoButton
             onClick={() => {
-              console.log("click");
               updatePost({
                 title: post.title,
                 id: post.id,
@@ -142,6 +142,32 @@ const EditPost: FC<EditPostProps> = ({ defaultPost }) => {
           >
             Save
           </DarkoButton>
+          <UploadButton
+            input={{ postId: post.id }}
+            endpoint="imageUploader"
+            onUploadBegin={() => {
+              setPost((prev) => ({ ...prev, imageUrl: null }));
+            }}
+            onUploadAborted={() => {
+              setPost((prev) => ({
+                ...prev!,
+                imageUrl: postData?.imageUrl ?? null,
+              }));
+            }}
+            onUploadError={(error: Error) => {
+              setPost((prev) => ({
+                ...prev!,
+                imageUrl: postData?.imageUrl ?? null,
+              }));
+            }}
+            onClientUploadComplete={(res) => {
+              setPost((prev) => ({
+                ...prev!,
+                imageUrl: res[0]?.url ?? "",
+              }));
+            }}
+          />
+          <Image src={post.imageUrl ?? ""} alt="" width={500} height={300} />
         </div>
       )}
     </>
