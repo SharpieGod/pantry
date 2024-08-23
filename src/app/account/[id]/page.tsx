@@ -22,7 +22,7 @@ const AccountPage: FC<AccountPageProps> = async ({ params: { id } }) => {
     return redirect("/account");
   }
 
-  return <div>AccountPage</div>;
+  return <div>{JSON.stringify(user)}</div>;
 };
 
 export default AccountPage;

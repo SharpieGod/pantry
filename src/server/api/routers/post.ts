@@ -36,4 +36,24 @@ export const postRouter = createTRPCRouter({
         },
       });
     }),
+
+  getPost: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const post = await ctx.db.post.findFirst({ where: { id: input.id } });
+
+      if (!post) return null;
+
+      if (post.published) return post;
+
+      if (ctx.session && post.userId === ctx.session.user.id) return post;
+
+      return null;
+    }),
+
+  updatePost: protectedProcedure
+    .input(
+      z.object({ title: z.string(), category: z.nativeEnum(FoodCategory) }),
+    )
+    .mutation(async ({ ctx, input }) => {}),
 });
