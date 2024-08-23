@@ -99,6 +99,9 @@ export const postRouter = createTRPCRouter({
           where: {
             userId: input.userId,
           },
+          orderBy: {
+            createdAt: "asc",
+          },
         });
       }
 
@@ -107,6 +110,39 @@ export const postRouter = createTRPCRouter({
           userId: input.userId,
           published: true,
         },
+        orderBy: {
+          publishedAt: "asc",
+        },
       });
     }),
+
+  getPreviews: publicProcedure.query(async ({ ctx }) => {
+    const options = Object.values(FoodCategory);
+
+    const ret = await Promise.all(
+      options.map(async (e) => {
+        const posts = await ctx.db.post.findMany({
+          where: {
+            published: true,
+            category: e,
+          },
+          orderBy: {
+            publishedAt: "asc",
+          },
+          include: {
+            user: true,
+          },
+          take: 2,
+        });
+        return { [e]: posts };
+      }),
+    );
+
+    const result: Record<FoodCategory, (typeof ret)[0][string]> = Object.assign(
+      {},
+      ...ret,
+    );
+
+    return result;
+  }),
 });

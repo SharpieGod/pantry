@@ -16,11 +16,16 @@ const MyAccountPage = async () => {
   return (
     <div>
       <Navbar />
-      <ul className="flex gap-4 p-4">
-        {posts.map((p) => (
-          <PostCardEdit post={p} key={p.id} />
-        ))}
-      </ul>
+      <div className="mx-auto w-3/5">
+        <h1 className="py-4 text-2xl font-semibold opacity-80">
+          Hello, {session.user.name}
+        </h1>
+        <ul className="flex flex-wrap items-center gap-8">
+          {posts.map((p) => (
+            <PostCardEdit post={p} key={p.id} />
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

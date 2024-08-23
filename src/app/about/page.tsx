@@ -8,7 +8,7 @@ const AboutPage = async () => {
   const session = await getServerAuthSession();
 
   return (
-    <div className="bg-[#1E1E1E] min-h-screen text-[#f0b090]">
+    <div className="min-h-screen bg-[#1E1E1E] text-[#f0b090]">
       <Navbar />
       <div className="mx-36 mt-24">
         <h2 className="text-2xl font-bold text-[#f0b090]">Mission statement</h2>
@@ -44,7 +44,9 @@ const AboutPage = async () => {
         </p>
       </div>
       <div className="mx-36 mt-8 flex flex-col items-center justify-center">
-        <h2 className="text-2xl font-bold text-[#f0b090]">Contact Information</h2>
+        <h2 className="text-2xl font-bold text-[#f0b090]">
+          Contact Information
+        </h2>
         <p className="mt-2 text-center text-lg">
           We&apos;d love to hear from you! Whether you have questions, feedback,
           or just want to say hello, feel free to reach out to us:
