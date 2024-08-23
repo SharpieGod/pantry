@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { FoodCategory, Post } from "@prisma/client";
+import { FoodCategory, Post, PostState } from "@prisma/client";
 
 import {
   createTRPCRouter,
@@ -15,6 +15,7 @@ export const postRouter = createTRPCRouter({
         SELECT p.*, 
               MAX(similarity(c.title, ${input.query.trim()})) as relevance
         FROM "Post" p
+        WHERE p.category = ${input.filter}
         GROUP BY p.id
         ORDER BY relevance DESC;
       `;
@@ -43,7 +44,7 @@ export const postRouter = createTRPCRouter({
 
       if (!post) return null;
 
-      if (post.published) return post;
+      if (post.postState === PostState.PUBLIC) return post;
 
       if (ctx.session && post.userId === ctx.session.user.id) return post;
 
@@ -108,7 +109,7 @@ export const postRouter = createTRPCRouter({
       return await ctx.db.post.findMany({
         where: {
           userId: input.userId,
-          published: true,
+          postState: PostState.PUBLIC,
         },
         orderBy: {
           publishedAt: "asc",
@@ -123,7 +124,7 @@ export const postRouter = createTRPCRouter({
       options.map(async (e) => {
         const posts = await ctx.db.post.findMany({
           where: {
-            published: true,
+            postState: PostState.PUBLIC,
             category: e,
           },
           orderBy: {
@@ -145,4 +146,19 @@ export const postRouter = createTRPCRouter({
 
     return result;
   }),
+
+  changePublishedStatus: protectedProcedure
+    .input(z.object({ id: z.string(), publish: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.post.update({
+        where: {
+          id: input.id,
+          userId: ctx.session.user.id,
+        },
+        data: {
+          postState: input.publish ? PostState.PUBLIC : PostState.PRIVATE,
+          publishedAt: input.publish ? new Date().toISOString() : null,
+        },
+      });
+    }),
 });

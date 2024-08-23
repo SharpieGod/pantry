@@ -13,6 +13,7 @@ const MyAccountPage = async () => {
   }
 
   const posts = await api.post.listByUser({ userId: session.user.id });
+
   return (
     <div>
       <Navbar />

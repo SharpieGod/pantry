@@ -29,7 +29,10 @@ const PostCard: FC<PostCardProps> = ({ post }) => {
   };
 
   return (
-    <div className="relative flex h-80 w-96 flex-col gap-2">
+    <Link
+      className="relative flex h-80 w-96 flex-col gap-2"
+      href={`/post/${post.id}`}
+    >
       <div className="flex-1 overflow-hidden rounded-lg">
         {post.imageUrl ? (
           <Image
@@ -60,7 +63,7 @@ const PostCard: FC<PostCardProps> = ({ post }) => {
           <h1 className="">{post.title !== "" ? post.title : "<No title>"}</h1>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

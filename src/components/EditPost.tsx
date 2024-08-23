@@ -1,5 +1,5 @@
 "use client";
-import { FoodCategory, Post } from "@prisma/client";
+import { FoodCategory, Post, PostState } from "@prisma/client";
 import { useEffect, useState, type FC } from "react";
 import { FaCheck, FaSpinner } from "react-icons/fa6";
 import { toast } from "sonner";
@@ -53,6 +53,13 @@ const EditPost: FC<EditPostProps> = ({ defaultPost }) => {
       });
     }
   }, [selectedOption]);
+
+  const { mutate: changePublished, isPending: publishedPending } =
+    api.post.changePublishedStatus.useMutation({
+      onSuccess: (res) => {
+        setPost(res);
+      },
+    });
 
   const { mutate: updatePost, isPending: updatePending } =
     api.post.updatePost.useMutation({
@@ -161,6 +168,26 @@ const EditPost: FC<EditPostProps> = ({ defaultPost }) => {
           }}
         />
         <Image src={post.imageUrl ?? ""} alt="" width={500} height={300} />
+        <div>
+          {post.postState === PostState.PRIVATE && (
+            <DarkoButton
+              disabled={publishedPending}
+              variant="primary"
+              onClick={() => changePublished({ id: post.id, publish: true })}
+            >
+              Publish
+            </DarkoButton>
+          )}
+          {post.postState === PostState.PUBLIC && (
+            <DarkoButton
+              disabled={publishedPending}
+              variant="primary"
+              onClick={() => changePublished({ id: post.id, publish: false })}
+            >
+              Private
+            </DarkoButton>
+          )}
+        </div>
       </div>
     </>
   );
