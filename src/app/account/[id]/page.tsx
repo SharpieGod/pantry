@@ -11,18 +11,36 @@ const AccountPage: FC<AccountPageProps> = async ({ params: { id } }) => {
   const user = await api.user.getUser({ id });
 
   if (!user) {
-    // No user
     return redirect("/");
   }
 
   const session = await getServerAuthSession();
 
   if (session && user.id === session.user.id) {
-    // account page user is user
     return redirect("/account");
   }
 
-  return <div>{JSON.stringify(user)}</div>;
+
+  const posts = await api.post.listByUser({ userId: id });
+
+  console.log(`Fetched posts for user ${id}:`, posts);
+
+  return (
+    <div>
+      <h1>{user.name}'s Posts</h1>
+      {posts.length === 0 ? (
+        <p>No public posts available.</p>
+      ) : (
+        <ul>
+          {posts.map((post) => (
+            <li key={post.id}>
+              <h2>{post.title}</h2>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 };
 
 export default AccountPage;
