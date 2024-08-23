@@ -16,6 +16,9 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^1.6.0",
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@prisma/client": "^5.14.0",
     "@radix-ui/react-select": "^2.1.1",
     "@t3-oss/env-nextjs": "^0.10.1",
