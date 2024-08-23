@@ -19,7 +19,7 @@ const DarkoButton: FC<DarkoButtonProps> = ({
 }) => {
   const [animation, setAnimation] = useState({ x: 0, y: 0, key: 0 });
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     setAnimation({
       x: e.clientX - rect.left,
@@ -29,46 +29,48 @@ const DarkoButton: FC<DarkoButtonProps> = ({
   };
 
   return (
-    <button
-      {...props}
-      onClick={handleClick}
-      className={cn(
-        "relative overflow-hidden",
-        "rounded p-5 py-2 text-lg transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-30",
-        {
-          "bg-red-500/80": variant === "danger",
-          "hover:bg-red-500/60": variant === "danger" && !props.disabled,
+    <div onClick={handleClick}>
+      <button
+        {...props}
+        className={cn(
+          "relative overflow-hidden",
+          "rounded p-5 py-2 text-lg transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-30",
+          {
+            "bg-red-500/80": variant === "danger",
+            "hover:bg-red-500/60": variant === "danger" && !props.disabled,
 
-          "bg-primary-300 text-text-900": variant === "primary",
-          "hover:bg-primary-300/90": variant === "primary" && !props.disabled,
+            "bg-primary-300 text-text-900": variant === "primary",
+            "hover:bg-primary-300/90": variant === "primary" && !props.disabled,
 
-          "bg-background-900": variant === "secondary",
-          "hover:bg-background-900/80":
-            variant === "secondary" && !props.disabled,
+            "bg-background-900": variant === "secondary",
+            "hover:bg-background-900/80":
+              variant === "secondary" && !props.disabled,
 
-          "hover:bg-background-900/50": variant === "ghost" && !props.disabled,
-        },
-        className,
-      )}
-    >
-      {!props.disabled && (
-        <motion.span
-          key={animation.key}
-          initial={{
-            scale: 0.2,
-            opacity: animation.key === 0 ? 0 : 0.4,
-            top: animation.y,
-            left: animation.x,
-            x: "-50%",
-            y: "-50%",
-          }}
-          animate={{ scale: 2, opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="absolute size-32 rounded-full bg-white"
-        ></motion.span>
-      )}
-      {children}
-    </button>
+            "hover:bg-background-900/50":
+              variant === "ghost" && !props.disabled,
+          },
+          className,
+        )}
+      >
+        {!props.disabled && (
+          <motion.span
+            key={animation.key}
+            initial={{
+              scale: 0.2,
+              opacity: animation.key === 0 ? 0 : 0.4,
+              top: animation.y,
+              left: animation.x,
+              x: "-50%",
+              y: "-50%",
+            }}
+            animate={{ scale: 2, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="pointer-events-none absolute size-32 rounded-full bg-white"
+          ></motion.span>
+        )}
+        {children}
+      </button>
+    </div>
   );
 };
 
