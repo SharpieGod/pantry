@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import { type FC } from "react";
+import Navbar from "~/components/Navbar";
+import PostCard from "~/components/PostCard";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
 
@@ -27,18 +29,22 @@ const AccountPage: FC<AccountPageProps> = async ({ params: { id } }) => {
 
   return (
     <div>
-      <h1>{user.name}'s Posts</h1>
-      {posts.length === 0 ? (
-        <p>No public posts available.</p>
-      ) : (
-        <ul>
-          {posts.map((post) => (
-            <li key={post.id}>
-              <h2>{post.title}</h2>
-            </li>
-          ))}
-        </ul>
-      )}
+      <Navbar />
+      <div className="mx-auto w-3/5">
+        <h1 className="py-4 text-2xl font-semibold opacity-80">
+          {user.name}'s Posts
+        </h1>
+        {posts.length === 0 ? (
+          <p>No public posts available.</p>
+        ) : (
+          <ul className="flex flex-wrap items-center gap-8">
+            {posts.map((p) => (
+              <PostCard post={p} key={p.id} />
+            ))}
+          </ul>
+
+        )}
+      </div>
     </div>
   );
 };
