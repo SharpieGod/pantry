@@ -30,7 +30,7 @@ const PostCard: FC<PostCardProps> = ({ post }) => {
 
   return (
     <Link
-      className="relative flex h-80 w-96 flex-col gap-2"
+      className="relative flex h-72 w-80 flex-col gap-2"
       href={`/post/${post.id}`}
     >
       <div className="flex-1 overflow-hidden rounded-lg">

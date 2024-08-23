@@ -8,19 +8,32 @@ import {
 } from "~/server/api/trpc";
 
 export const postRouter = createTRPCRouter({
-  search: publicProcedure
-    .input(z.object({ query: z.string(), filter: z.nativeEnum(FoodCategory) }))
+  searchPosts: publicProcedure
+    .input(
+      z.object({
+        query: z.string(),
+        filter: z.nativeEnum(FoodCategory).nullable(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
-      const posts = await ctx.db.$queryRaw<Post[]>`
-        SELECT p.*, 
-              MAX(similarity(c.title, ${input.query.trim()})) as relevance
-        FROM "Post" p
-        WHERE p.category = ${input.filter}
-        GROUP BY p.id
-        ORDER BY relevance DESC;
-      `;
+      if (input.filter) {
+        return await ctx.db.$queryRaw<Post[]>`
+          SELECT p.*,
+                MAX(similarity(p.title, ${input.query})) as relevance
+          FROM "Post" p
+          WHERE p.category = ${input.filter}::"FoodCategory"
+          GROUP BY p.id
+          ORDER BY relevance DESC;
+        `;
+      }
 
-      return posts;
+      return await ctx.db.$queryRaw<Post[]>`
+          SELECT p.*,
+                MAX(similarity(p.title, ${input.query})) as relevance
+          FROM "Post" p
+          GROUP BY p.id
+          ORDER BY relevance DESC;
+        `;
     }),
 
   newPost: protectedProcedure
@@ -56,7 +69,7 @@ export const postRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         title: z.string(),
-        category: z.nullable(z.nativeEnum(FoodCategory)),
+        category: z.nativeEnum(FoodCategory).nullable(),
       }),
     )
     .mutation(async ({ ctx, input }) => {

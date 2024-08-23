@@ -29,7 +29,7 @@ const PostCardEdit: FC<PostCardEditProps> = ({ post }) => {
   };
 
   return (
-    <div className="relative flex h-80 w-96 flex-col gap-2">
+    <div className="relative flex h-72 w-80 flex-col gap-2">
       <div className="flex-1 overflow-hidden rounded-lg">
         {post.imageUrl ? (
           <Image

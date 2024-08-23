@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { type FC } from "react";
+import { useState, type FC } from "react";
 
 interface SearchBoxProps {
   query: string;
@@ -8,6 +8,7 @@ interface SearchBoxProps {
 
 const SearchBox: FC<SearchBoxProps> = ({ query }) => {
   const router = useRouter();
+  const [searchText, setSearchText] = useState(query);
   return (
     <form
       onSubmit={(e) => {
@@ -17,7 +18,11 @@ const SearchBox: FC<SearchBoxProps> = ({ query }) => {
         router.push("/account");
       }}
     >
-      <input type="text" />
+      <input
+        type="text"
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
+      />
     </form>
   );
 };
