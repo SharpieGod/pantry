@@ -41,7 +41,7 @@ enum FoodCategory {
 
 model Post {
   id        String        @id @default(cuid())
-  imageURL  String?
+  imageUrl  String?
   title     String
   userId    String
   user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)

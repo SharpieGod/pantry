@@ -67,4 +67,26 @@ export const postRouter = createTRPCRouter({
         },
       });
     }),
+  bindImage: publicProcedure
+    .input(
+      z.object({ id: z.string(), imageUrl: z.string(), userId: z.string() }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.db.user.findFirst({ where: { id: input.userId } });
+
+      if (!user) return null;
+
+      const post = await ctx.db.post.findFirst({ where: { id: input.id } });
+
+      if (!post) return null;
+
+      if (post.userId !== user.id) return null;
+
+      return await ctx.db.post.update({
+        where: { id: post.id },
+        data: {
+          imageUrl: input.imageUrl,
+        },
+      });
+    }),
 });

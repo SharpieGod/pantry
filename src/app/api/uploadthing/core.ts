@@ -10,7 +10,7 @@ const f = createUploadthing();
 export const ourFileRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
   imageUploader: f({ image: { maxFileSize: "4MB" } })
-    .input(z.object({ cardId: z.string() }))
+    .input(z.object({ postId: z.string() }))
     // Set permissions and file types for this FileRoute
     .middleware(async ({ req, input }) => {
       // This code runs on your server before upload
@@ -20,20 +20,16 @@ export const ourFileRouter = {
       if (!session) throw new UploadThingError("Unauthorized");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: session.user.id, cardId: input.cardId };
+      return { userId: session.user.id, postId: input.postId };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
 
-      console.log("Card id: ", metadata.cardId);
-      await api.card.bindImage({
-        id: metadata.cardId,
-        imageURL: file.url,
+      console.log("post id: ", metadata.postId);
+      await api.post.bindImage({
+        id: metadata.postId,
+        imageUrl: file.url,
         userId: metadata.userId,
-      });
-
-      await api.card.sendGPT({
-        imageURL: file.url,
       });
 
       console.log("Upload complete for userId:", metadata.userId);

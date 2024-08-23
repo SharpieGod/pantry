@@ -7,30 +7,32 @@ const Navbar = async () => {
   const session = await getServerAuthSession();
 
   return (
-    <nav className="flex h-20 w-auto px-24 items-center justify-between text-xl bg-white">
-      <Link href="/" className="text-2xl">
-        Pantry
-      </Link>
+    <nav className="w-full bg-background-900/30">
+      <div className="flex h-20 items-center justify-between px-24 text-xl md:mx-auto md:w-3/5">
+        <Link href="/" className="text-2xl">
+          Pantry
+        </Link>
 
-      <ul className="flex gap-4">
-        <NavLink href="/">Home</NavLink>
-        <NavLink href="/about">About</NavLink>
-        <NavLink href="/categories">Categories</NavLink>
-        <NavLink href="/account">Account</NavLink>
+        <ul className="flex gap-4">
+          <NavLink href="/">Home</NavLink>
+          <NavLink href="/about">About</NavLink>
+          <NavLink href="/categories">Categories</NavLink>
+          <NavLink href="/account">Account</NavLink>
 
-        {session ? (
-          <>
-            <NavLink href="/post/new">Make Posting</NavLink>
-            <NavLink href="api/auth/signout" variant="secondary">
-              Logout
+          {session ? (
+            <>
+              <NavLink href="/post/new">Make Posting</NavLink>
+              <NavLink href="api/auth/signout" variant="secondary">
+                Logout
+              </NavLink>
+            </>
+          ) : (
+            <NavLink href="/api/auth/signin" variant="secondary">
+              Sign In
             </NavLink>
-          </>
-        ) : (
-          <NavLink href="/api/auth/signin" variant="secondary">
-            Sign In
-          </NavLink>
-        )}
-      </ul>
+          )}
+        </ul>
+      </div>
     </nav>
   );
 };
