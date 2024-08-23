@@ -12,10 +12,10 @@ const CategoryPreviews = () => {
     <ul className="mx-auto flex w-2/3 flex-wrap gap-8">
       {ret &&
         Object.values(ret).map(
-          (c) =>
+          (c, i) =>
             c.length > 0 && (
-              <div className="flex gap-8">
-                {c.map((p) => p && <PostCard post={p} />)}
+              <div className="flex gap-8" key={i}>
+                {c.map((p) => p && <PostCard post={p} key={p.id} />)}
               </div>
             ),
         )}

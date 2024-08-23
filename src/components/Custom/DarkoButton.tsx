@@ -42,7 +42,7 @@ const DarkoButton: FC<DarkoButtonProps> = ({
             "bg-primary-300 text-text-900": variant === "primary",
             "hover:bg-primary-300/90": variant === "primary" && !props.disabled,
 
-            "bg-accent-800": variant === "secondary",
+            "bg-accent-900": variant === "secondary",
             "hover:bg-accent-900/80":
               variant === "secondary" && !props.disabled,
 

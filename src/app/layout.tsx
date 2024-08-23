@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body className="bg-background-950 text-text-50">
-        <Toaster />
+        <Toaster theme="dark" />
         <NextSSRPlugin
           /**
            * The `extractRouterConfig` will extract **only** the route configs

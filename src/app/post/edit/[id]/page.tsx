@@ -9,16 +9,10 @@ interface EditPostPageProps {
 }
 
 const EditPostPage: FC<EditPostPageProps> = async ({ params: { id } }) => {
-  const post = await api.post.getPost({ id });
-
-  if (!post) {
-    return redirect("/");
-  }
-
   return (
     <div>
       <Navbar />
-      <EditPost defaultPost={post} />
+      <EditPost postId={id} />
     </div>
   );
 };

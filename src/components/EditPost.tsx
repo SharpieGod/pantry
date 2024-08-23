@@ -1,22 +1,22 @@
 "use client";
 import { FoodCategory, Post, PostState } from "@prisma/client";
 import { useEffect, useState, type FC } from "react";
-import { FaCheck, FaSpinner } from "react-icons/fa6";
+import { FaCheck } from "react-icons/fa6";
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
 import { SelectElementOption } from "./Custom/SelectElement";
 import { FoodCategoryReadable } from "~/types";
 import SelectElement from "./Custom/SelectElement";
 import { UploadButton } from "~/utils/uploadthing";
-import { OurFileRouter } from "~/app/api/uploadthing/core";
 import DarkoButton from "./Custom/DarkoButton";
 import Image from "next/image";
+import { cn } from "~/lib/utils";
 
 interface EditPostProps {
-  defaultPost: Post;
+  postId: string;
 }
 
-const EditPost: FC<EditPostProps> = ({ defaultPost }) => {
+const EditPost: FC<EditPostProps> = ({ postId }) => {
   const utils = api.useUtils();
 
   const selectOptions: SelectElementOption[] = Object.entries(
@@ -30,27 +30,33 @@ const EditPost: FC<EditPostProps> = ({ defaultPost }) => {
     return selectOptions.find((option) => option.value === category);
   };
 
-  const [post, setPost] = useState(defaultPost);
+  const {
+    data: fetchedPost,
+    isLoading,
+    isError,
+  } = api.post.getPost.useQuery({ id: postId });
+
+  const [post, setPost] = useState<Post | null>(null);
   const [selectedOption, setSelectedOption] =
-    useState<SelectElementOption | null>(
-      convertCategory(defaultPost.category) ?? null,
-    );
+    useState<SelectElementOption | null>(null);
 
   useEffect(() => {
-    if (selectedOption)
-      setPost((prev) => ({
-        ...prev,
-        category: selectedOption.value as FoodCategory,
-      }));
+    if (fetchedPost) {
+      setPost(fetchedPost);
+      setSelectedOption(convertCategory(fetchedPost.category) ?? null);
+    }
+  }, [fetchedPost]);
 
-    if (JSON.stringify(post) !== JSON.stringify(defaultPost)) {
-      if (!post.category) return;
-
-      updatePost({
-        title: post.title,
-        id: post.id,
-        category: post.category,
-      });
+  useEffect(() => {
+    if (selectedOption && post) {
+      setPost((prev) =>
+        prev
+          ? {
+              ...prev,
+              category: selectedOption.value as FoodCategory,
+            }
+          : null,
+      );
     }
   }, [selectedOption]);
 
@@ -64,16 +70,15 @@ const EditPost: FC<EditPostProps> = ({ defaultPost }) => {
   const { mutate: updatePost, isPending: updatePending } =
     api.post.updatePost.useMutation({
       onMutate: (input) => {
-        const originalPost = { ...post };
-
         if (post) {
+          const originalPost = { ...post };
           utils.post.getPost.setData(
             { id: input.id },
             { ...post, title: input.title, category: input.category },
           );
+          return originalPost;
         }
-
-        return originalPost;
+        return undefined;
       },
 
       onSuccess: () => {
@@ -82,114 +87,127 @@ const EditPost: FC<EditPostProps> = ({ defaultPost }) => {
 
       onError: (err, variables, context) => {
         toast.error(err.message);
-
         if (context) {
           utils.post.getPost.setData({ id: context.id ?? "" }, context as Post);
         }
       },
     });
-  return (
-    <>
-      <div className="mx-auto flex w-3/5 flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-1 text-text-50 opacity-80">
-            {updatePending ? (
-              <span>Saving...</span>
-            ) : (
-              <div className="flex items-center gap-2 opacity-80">
-                <span>Saved</span>
-                <FaCheck />
-              </div>
-            )}
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <input
-              type="text"
-              placeholder="Title"
-              className="col-span-2 rounded-lg border p-4 py-3"
-              value={post.title}
-              onChange={(e) => {
-                setPost((prev) => ({ ...prev, title: e.target.value }));
-              }}
-            />
-            <SelectElement
-              placeholder="Select a category"
-              options={selectOptions}
-              selected={selectedOption ?? null}
-              setSelected={(newSelected) => {
-                if (newSelected) setSelectedOption(newSelected);
-              }}
-            ></SelectElement>
-          </div>
-        </div>
 
-        <DarkoButton
-          onClick={() => {
+  if (isLoading) return <div>Loading...</div>;
+  if (isError || !fetchedPost) return <div>Error loading post.</div>;
+
+  return (
+    <div className="mx-auto flex w-3/5 flex-col gap-4 pt-4">
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-1 text-text-50 opacity-80">
+          {updatePending ? (
+            <span>Saving...</span>
+          ) : (
+            <div className="flex items-center gap-2 opacity-80">
+              <span>Saved</span>
+            </div>
+          )}
+          <FaCheck className={cn({ hidden: updatePending })} />
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <input
+            type="text"
+            placeholder="Title"
+            className="col-span-2 rounded-lg border border-secondary-800 bg-secondary-950 p-4 py-3"
+            value={post?.title ?? ""}
+            onChange={(e) => {
+              setPost((prev) =>
+                prev ? { ...prev, title: e.target.value } : null,
+              );
+            }}
+          />
+          <SelectElement
+            placeholder="Select a category"
+            options={selectOptions}
+            selected={selectedOption ?? null}
+            setSelected={(newSelected) => {
+              if (newSelected) setSelectedOption(newSelected);
+            }}
+          />
+        </div>
+      </div>
+
+      <DarkoButton
+        onClick={() => {
+          if (post) {
             updatePost({
               title: post.title,
               id: post.id,
               category: post.category!,
             });
-          }}
-          className="w-40"
-          variant="secondary"
-        >
-          Save
-        </DarkoButton>
-        <UploadButton
-          input={{ postId: post.id }}
-          endpoint="imageUploader"
-          onUploadBegin={() => {
-            setPost((prev) => ({ ...prev, imageUrl: null }));
-          }}
-          onUploadAborted={() => {
-            setPost((prev) => ({
-              ...prev,
-              imageUrl:
-                defaultPost?.imageUrl === undefined
-                  ? null
-                  : defaultPost?.imageUrl,
-            }));
-          }}
-          onUploadError={(error: Error) => {
-            setPost((prev) => ({
-              ...prev,
-              imageUrl:
-                defaultPost?.imageUrl === undefined
-                  ? null
-                  : defaultPost?.imageUrl,
-            }));
-          }}
-          onClientUploadComplete={(res) => {
-            setPost((prev) => ({
-              ...prev,
-              imageUrl: res[0]?.url ?? "",
-            }));
-          }}
-        />
-        <Image src={post.imageUrl ?? ""} alt="" width={500} height={300} />
-        <div>
-          {post.postState === PostState.PRIVATE && (
-            <DarkoButton
-              disabled={publishedPending}
-              variant="primary"
-              onClick={() => changePublished({ id: post.id, publish: true })}
-            >
-              Publish
-            </DarkoButton>
-          )}
-          {post.postState === PostState.PUBLIC && (
-            <DarkoButton
-              disabled={publishedPending}
-              variant="primary"
-              onClick={() => changePublished({ id: post.id, publish: false })}
-            >
-              Private
-            </DarkoButton>
-          )}
-        </div>
+          }
+        }}
+        className="w-40"
+        variant="secondary"
+      >
+        Save
+      </DarkoButton>
+      <UploadButton
+        input={{ postId: post?.id ?? "" }}
+        endpoint="imageUploader"
+        onUploadBegin={() => {
+          setPost((prev) => (prev ? { ...prev, imageUrl: null } : null));
+        }}
+        onUploadAborted={() => {
+          setPost((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  imageUrl: post?.imageUrl ?? null,
+                }
+              : null,
+          );
+        }}
+        onUploadError={() => {
+          setPost((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  imageUrl: post?.imageUrl ?? null,
+                }
+              : null,
+          );
+        }}
+        onClientUploadComplete={(res) => {
+          setPost((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  imageUrl: res[0]?.url ?? "",
+                }
+              : null,
+          );
+        }}
+      />
+      {post?.imageUrl && (
+        <Image src={post.imageUrl} alt="" width={500} height={300} />
+      )}
+      <div>
+        {post?.postState === PostState.PRIVATE && (
+          <DarkoButton
+            disabled={publishedPending}
+            variant="primary"
+            onClick={() => changePublished({ id: post.id, publish: true })}
+          >
+            Publish
+          </DarkoButton>
+        )}
+        {post?.postState === PostState.PUBLIC && (
+          <DarkoButton
+            disabled={publishedPending}
+            variant="primary"
+            onClick={() => changePublished({ id: post.id, publish: false })}
+          >
+            Private
+          </DarkoButton>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 

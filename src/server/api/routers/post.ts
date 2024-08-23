@@ -56,7 +56,7 @@ export const postRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         title: z.string(),
-        category: z.nativeEnum(FoodCategory),
+        category: z.nullable(z.nativeEnum(FoodCategory)),
       }),
     )
     .mutation(async ({ ctx, input }) => {

@@ -3,6 +3,7 @@ import { FC, ReactNode } from "react";
 import { getServerAuthSession } from "~/server/auth";
 import DarkoButton from "./Custom/DarkoButton";
 import { FaSearch } from "react-icons/fa";
+import NewPostButton from "./NewPostButton";
 
 const Navbar = async () => {
   const session = await getServerAuthSession();
@@ -20,7 +21,7 @@ const Navbar = async () => {
           {session ? (
             <>
               <NavLink href="/account">Account</NavLink>
-              <NavLink href="/post/new">Make Posting</NavLink>
+              <NewPostButton />
               <NavLink href="/api/auth/signout" variant="secondary">
                 Logout
               </NavLink>
