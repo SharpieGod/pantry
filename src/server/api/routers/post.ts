@@ -67,6 +67,7 @@ export const postRouter = createTRPCRouter({
         },
       });
     }),
+
   bindImage: publicProcedure
     .input(
       z.object({ id: z.string(), imageUrl: z.string(), userId: z.string() }),
@@ -86,6 +87,25 @@ export const postRouter = createTRPCRouter({
         where: { id: post.id },
         data: {
           imageUrl: input.imageUrl,
+        },
+      });
+    }),
+
+  listByUser: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      if (ctx.session && input.userId === ctx.session.user.id) {
+        return await ctx.db.post.findMany({
+          where: {
+            userId: input.userId,
+          },
+        });
+      }
+
+      return await ctx.db.post.findMany({
+        where: {
+          userId: input.userId,
+          published: true,
         },
       });
     }),
