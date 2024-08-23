@@ -18,13 +18,18 @@ const Home = () => {
               <div className="h-48 w-48 rounded-lg bg-gray-700"></div>
             </div>
 
-            <div className="absolute left-2 text-[#f0b090]">
-              <button>{`<`}</button>
-            </div>
-            <div className="absolute right-2 text-[#f0b090]">
-              <button>{`>`}</button>
+            {/* Left Arrow */}
+            <div className="absolute left-2 text-white z-10">
+              <button className="text-3xl">{`<`}</button>
             </div>
 
+            {/* Right Arrow */}
+            <div className="absolute right-2 text-white z-10">
+              <button className="text-3xl">{`>`}</button>
+            </div>
+
+
+            {/* Dots */}
             <div className="absolute bottom-2 flex justify-center">
               <span className="mx-1 rounded-full bg-[#f0b090] p-1"></span>
               <span className="mx-1 rounded-full bg-gray-600 p-1"></span>

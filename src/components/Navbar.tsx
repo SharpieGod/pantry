@@ -64,7 +64,7 @@ const NavLink: FC<NavLinkProps> = ({ href, children, variant }) => {
 
   return (
     <Link href={href}>
-      <DarkoButton variant={variant ?? "ghost"} className={buttonClasses}>
+      <DarkoButton className={buttonClasses}>
         {children}
       </DarkoButton>
     </Link>

@@ -7,19 +7,11 @@ import { api } from "~/trpc/server";
 const AboutPage = async () => {
   const session = await getServerAuthSession();
 
-  //   if (!session) {
-  //     return redirect("/");
-  //   }
-
-  //   const user = await api.user.getUser({ id: session.user.id });
-
-  //   return <div>{JSON.stringify(user)}</div>;
-
   return (
-    <div>
+    <div className="bg-[#1E1E1E] min-h-screen text-[#f0b090]">
       <Navbar />
       <div className="mx-36 mt-24">
-        <h2 className="text-2xl font-bold">Mission statement</h2>
+        <h2 className="text-2xl font-bold text-[#f0b090]">Mission statement</h2>
         <p className="mt-2 text-lg">
           At Pantry, our mission is to create a community-driven platform where
           surplus food finds a new home. We aim to reduce food waste, foster
@@ -28,7 +20,7 @@ const AboutPage = async () => {
         </p>
       </div>
       <div className="mx-36 mt-4">
-        <h2 className="text-2xl font-bold">Why?</h2>
+        <h2 className="text-2xl font-bold text-[#f0b090]">Why?</h2>
         <p className="mt-2 text-lg">
           Every year, millions of pounds of perfectly good, non-perishable food
           items are discarded, contributing to the growing problem of food
@@ -40,7 +32,7 @@ const AboutPage = async () => {
         </p>
       </div>
       <div className="mx-36 mt-4">
-        <h2 className="text-2xl font-bold">Overview</h2>
+        <h2 className="text-2xl font-bold text-[#f0b090]">Overview</h2>
         <p className="mt-2 text-lg">
           Pantry is a unique platform where users can easily list non-perishable
           food items they no longer need. Whether it&apos;s extra cans of soup,
@@ -52,7 +44,7 @@ const AboutPage = async () => {
         </p>
       </div>
       <div className="mx-36 mt-8 flex flex-col items-center justify-center">
-        <h2 className="text-2xl font-bold">Contact Information</h2>
+        <h2 className="text-2xl font-bold text-[#f0b090]">Contact Information</h2>
         <p className="mt-2 text-center text-lg">
           We&apos;d love to hear from you! Whether you have questions, feedback,
           or just want to say hello, feel free to reach out to us:
