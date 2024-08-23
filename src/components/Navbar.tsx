@@ -8,20 +8,20 @@ const Navbar = async () => {
   const session = await getServerAuthSession();
 
   return (
-    <nav className="flex h-20 w-auto items-center justify-between bg-background-900/80 px-24 text-xl">
+    <nav className="flex h-20 w-auto items-center justify-between px-24 text-xl bg-[#1E1E1E]">
       <Link href="/" className="text-3xl font-bold text-red-500">
         pantry.
       </Link>
 
       <div className="mx-8 flex-grow">
         <div className="relative">
-          <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[#f0b090]">
             <FaSearch />
           </span>
           <input
             type="text"
             placeholder="Search"
-            className="w-full rounded-md border border-gray-300 p-2 pl-10 text-sm"
+            className="w-full rounded-md border border-[#f0b090] bg-[#1E1E1E] p-2 pl-10 text-sm text-[#f0b090] placeholder-[#f0b090]"
           />
         </div>
       </div>
@@ -40,7 +40,7 @@ const Navbar = async () => {
             </NavLink>
           </>
         ) : (
-          <NavLink href="/api/auth/signin" variant="secondary">
+          <NavLink href="/api/auth/signin" variant="signin">
             Sign In
           </NavLink>
         )}
@@ -52,13 +52,21 @@ const Navbar = async () => {
 interface NavLinkProps {
   href: string;
   children?: ReactNode;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "signin";
 }
 
 const NavLink: FC<NavLinkProps> = ({ href, children, variant }) => {
+  const buttonClasses = variant === "signin"
+    ? "bg-[#333333] text-[#ff7733] py-2 px-4 rounded-md border border-[#2b2b2b] hover:bg-[#2b2b2b] transition-colors duration-300"
+    : variant === "secondary"
+    ? "bg-[#f0b090] text-[#1E1E1E] py-2 px-4 rounded hover:bg-[#d7987c] transition-colors duration-300"
+    : "text-[#f0b090]";
+
   return (
     <Link href={href}>
-      <DarkoButton variant={variant ?? "ghost"}>{children}</DarkoButton>
+      <DarkoButton variant={variant ?? "ghost"} className={buttonClasses}>
+        {children}
+      </DarkoButton>
     </Link>
   );
 };
