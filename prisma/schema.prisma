@@ -12,7 +12,6 @@ datasource db {
 }
 
 enum FoodCategory {
-  // Make sure in sync with types.ts
   VEGETABLES
   FRUITS
   DAIRY

@@ -1,4 +1,4 @@
-export enum FoodCategory {
+export enum FoodCategoryReadable {
   VEGETABLES = "Vegetables",
   FRUITS = "Fruits",
   DAIRY = "Dairy",

@@ -1,12 +1,11 @@
 import { z } from "zod";
-import { Post } from "@prisma/client";
+import { FoodCategory, Post } from "@prisma/client";
 
 import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import { FoodCategory } from "~/types";
 
 export const postRouter = createTRPCRouter({
   search: publicProcedure
@@ -53,7 +52,19 @@ export const postRouter = createTRPCRouter({
 
   updatePost: protectedProcedure
     .input(
-      z.object({ title: z.string(), category: z.nativeEnum(FoodCategory) }),
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        category: z.nativeEnum(FoodCategory),
+      }),
     )
-    .mutation(async ({ ctx, input }) => {}),
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.post.update({
+        where: { id: input.id, userId: ctx.session.user.id },
+        data: {
+          title: input.title,
+          category: input.category,
+        },
+      });
+    }),
 });

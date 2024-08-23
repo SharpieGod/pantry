@@ -7,7 +7,7 @@ const Navbar = async () => {
   const session = await getServerAuthSession();
 
   return (
-    <nav className="flex h-20 items-center justify-around text-xl">
+    <nav className="mx-auto flex h-20 w-3/5 items-center justify-between text-xl">
       <Link href="/" className="text-2xl">
         Pantry
       </Link>
@@ -18,7 +18,9 @@ const Navbar = async () => {
         {session ? (
           <>
             <NavLink href="/post/new">Make Posting</NavLink>
-            <NavLink href="api/auth/signout">Logout</NavLink>
+            <NavLink href="api/auth/signout" variant="secondary">
+              Logout
+            </NavLink>
           </>
         ) : (
           <NavLink href="/api/auth/signin" variant="secondary">
