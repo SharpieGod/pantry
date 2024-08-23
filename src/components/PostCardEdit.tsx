@@ -5,6 +5,7 @@ import { type FC } from "react";
 import { FoodCategoryReadable } from "~/types";
 import { useRef } from "react";
 import Link from "next/link";
+import { LuPen } from "react-icons/lu";
 
 interface PostCardEditProps {
   post: Post;
@@ -29,7 +30,7 @@ const PostCardEdit: FC<PostCardEditProps> = ({ post }) => {
   };
 
   return (
-    <div className="relative flex h-72 w-80 flex-col gap-2">
+    <div className="relative flex h-72 w-80 flex-col">
       <div className="flex-1 overflow-hidden rounded-lg">
         {post.imageUrl ? (
           <Image
@@ -58,7 +59,12 @@ const PostCardEdit: FC<PostCardEditProps> = ({ post }) => {
         </span>
         <div className="flex justify-between">
           <h1 className="">{post.title !== "" ? post.title : "<No title>"}</h1>
-          <Link href={`/post/edit/${post.id}`}>Edit</Link>
+          <Link
+            href={`/post/edit/${post.id}`}
+            className="flex items-center gap-2"
+          >
+            <span>Edit</span> <LuPen />
+          </Link>
         </div>
       </div>
     </div>

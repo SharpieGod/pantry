@@ -15,12 +15,14 @@ const SearchBox: FC<SearchBoxProps> = ({ query }) => {
         e.preventDefault();
         e.stopPropagation();
 
-        router.push("/account");
+        router.push(`/search/${searchText}`);
       }}
     >
       <input
+        placeholder="Search"
         type="text"
         value={searchText}
+        className="w-full"
         onChange={(e) => setSearchText(e.target.value)}
       />
     </form>

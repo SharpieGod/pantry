@@ -13,9 +13,9 @@ const NewPostButton = () => {
       toast.info("Creating new post");
     },
 
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       router.push(`/post/edit/${data.id}`);
-      utils.post.listByUser.invalidate();
+      await utils.post.listByUser.invalidate();
     },
   });
   return (

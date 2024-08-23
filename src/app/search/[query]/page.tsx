@@ -9,8 +9,8 @@ interface pageProps {
 const page: FC<pageProps> = ({ params: { query } }) => {
   return (
     <div>
-      <Navbar />
-      <SearchResults query="eggs" filter={null} />
+      <Navbar search query={query} />
+      <SearchResults query={query} filter={null} />
     </div>
   );
 };

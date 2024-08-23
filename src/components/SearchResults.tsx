@@ -10,10 +10,14 @@ interface SearchResultsProps {
 }
 
 const SearchResults: FC<SearchResultsProps> = ({ query, filter }) => {
-  const { data: results } = api.post.searchPosts.useQuery({ query, filter });
+  const { data: results, isLoading } = api.post.searchPosts.useQuery({
+    query,
+    filter,
+  });
 
   return (
     <div>
+      {isLoading && <span>Loading...</span>}
       <ul>{results?.map((p) => <PostCard post={p} key={p.id} />)}</ul>
     </div>
   );
