@@ -7,7 +7,7 @@ const Navbar = async () => {
   const session = await getServerAuthSession();
 
   return (
-    <nav className="mx-auto flex h-20 w-3/5 items-center justify-between text-xl">
+    <nav className="flex h-20 w-auto px-24 items-center justify-between text-xl bg-white">
       <Link href="/" className="text-2xl">
         Pantry
       </Link>
