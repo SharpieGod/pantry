@@ -13,7 +13,10 @@ const Navbar = async () => {
       </Link>
 
       <ul className="flex gap-4">
+        <NavLink href="/">Home</NavLink>
         <NavLink href="/about">About</NavLink>
+        <NavLink href="/categories">Categories</NavLink>
+        <NavLink href="/account">Account</NavLink>
 
         {session ? (
           <>
