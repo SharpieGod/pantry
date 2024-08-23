@@ -7,9 +7,9 @@ const Navbar = async () => {
   const session = await getServerAuthSession();
 
   return (
-    <nav className="flex h-20 w-auto px-24 items-center justify-between text-xl bg-white">
-      <Link href="/" className="text-2xl">
-        Pantry
+    <nav className="flex h-20 w-auto px-24 items-center justify-between text-xl bg-[#F8F0C7]">
+      <Link href="/" className="text-3xl font-bold text-red-500 ">
+        pantry.
       </Link>
 
       <ul className="flex gap-4">
