@@ -49,7 +49,7 @@ const EditPost: FC<EditPostProps> = ({ defaultPost }) => {
       updatePost({
         title: post.title,
         id: post.id,
-        category: post.category as FoodCategory,
+        category: post.category,
       });
     }
   }, [selectedOption]);
@@ -78,8 +78,6 @@ const EditPost: FC<EditPostProps> = ({ defaultPost }) => {
 
         return originalPost;
       },
-
-      onSuccess: (card, variables, context) => {},
 
       onError: (err, variables, context) => {
         toast.error(err.message);
@@ -134,7 +132,7 @@ const EditPost: FC<EditPostProps> = ({ defaultPost }) => {
               updatePost({
                 title: post.title,
                 id: post.id,
-                category: post.category as FoodCategory,
+                category: post.category!,
               });
             }}
             className="w-40"
@@ -150,19 +148,21 @@ const EditPost: FC<EditPostProps> = ({ defaultPost }) => {
             }}
             onUploadAborted={() => {
               setPost((prev) => ({
-                ...prev!,
-                imageUrl: postData?.imageUrl ?? null,
+                ...prev,
+                imageUrl:
+                  postData?.imageUrl === undefined ? null : postData?.imageUrl,
               }));
             }}
             onUploadError={(error: Error) => {
               setPost((prev) => ({
-                ...prev!,
-                imageUrl: postData?.imageUrl ?? null,
+                ...prev,
+                imageUrl:
+                  postData?.imageUrl === undefined ? null : postData?.imageUrl,
               }));
             }}
             onClientUploadComplete={(res) => {
               setPost((prev) => ({
-                ...prev!,
+                ...prev,
                 imageUrl: res[0]?.url ?? "",
               }));
             }}

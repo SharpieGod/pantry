@@ -4,6 +4,7 @@ import Image from "next/image";
 import { type FC } from "react";
 import { FoodCategoryReadable } from "~/types";
 import { useRef } from "react";
+import Link from "next/link";
 
 interface PostCardEditProps {
   post: Post;
@@ -14,7 +15,7 @@ const PostCardEdit: FC<PostCardEditProps> = ({ post }) => {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLImageElement>) => {
     const { left, top, width, height } =
-      imageRef.current?.getBoundingClientRect() || {};
+      imageRef.current?.getBoundingClientRect() ?? {};
     const x = ((e.clientX - left!) / width!) * 30 - 15; // Adjust the multiplier for a stronger/weaker effect
     const y = ((e.clientY - top!) / height!) * 30 - 15;
 
@@ -50,11 +51,14 @@ const PostCardEdit: FC<PostCardEditProps> = ({ post }) => {
           />
         )}
       </div>
-      <div className="flex w-full justify-between text-lg">
-        <h1 className="">{post.title !== "" ? post.title : "<No title>"}</h1>
-        <span>
+      <div className="w-full flex-col text-lg">
+        <span className="text-base text-text-50/80">
           {post.category ? FoodCategoryReadable[post.category] : "No Category"}
         </span>
+        <div className="flex justify-between">
+          <h1 className="">{post.title !== "" ? post.title : "<No title>"}</h1>
+          <Link href={`/post/edit/${post.id}`}>Edit</Link>
+        </div>
       </div>
     </div>
   );

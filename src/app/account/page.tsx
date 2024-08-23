@@ -17,7 +17,9 @@ const MyAccountPage = async () => {
     <div>
       <Navbar />
       <ul className="flex gap-4 p-4">
-        {posts && posts.map((p) => <PostCardEdit post={p} />)}
+        {posts.map((p) => (
+          <PostCardEdit post={p} key={p.id} />
+        ))}
       </ul>
     </div>
   );

@@ -2,8 +2,7 @@ import Link from "next/link";
 import { FC, ReactNode } from "react";
 import { getServerAuthSession } from "~/server/auth";
 import DarkoButton from "./Custom/DarkoButton";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { FaSearch } from "react-icons/fa";
 
 const Navbar = async () => {
   const session = await getServerAuthSession();
@@ -14,16 +13,15 @@ const Navbar = async () => {
         pantry.
       </Link>
 
-      {/* Search Bar with Magnifying Glass Icon */}
-      <div className="flex-grow mx-8">
+      <div className="mx-8 flex-grow">
         <div className="relative">
           <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-            <FontAwesomeIcon icon={faSearch} className="text-grey-100" /> 
+            <FaSearch />
           </span>
           <input
             type="text"
             placeholder="Search"
-            className="w-full p-2 pl-10 text-sm border border-gray-300 rounded-md"
+            className="w-full rounded-md border border-gray-300 p-2 pl-10 text-sm"
           />
         </div>
       </div>

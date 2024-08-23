@@ -17,7 +17,7 @@ export const ourFileRouter = {
       const session = await getServerAuthSession();
 
       // If you throw, the user will not be able to upload
-      if (!session) throw new UploadThingError("Unauthorized");
+      if (!session) throw Error("Unauthorized");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId: session.user.id, postId: input.postId };
