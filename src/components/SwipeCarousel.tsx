@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { motion, useMotionValue } from "framer-motion";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { api } from "~/trpc/react"; 
+import { api } from "~/trpc/react";
 import { Post } from "@prisma/client";
 
 const ONE_SECOND = 1000;
@@ -96,7 +96,11 @@ export const SwipeCarousel = () => {
         <FaArrowRight size={30} />
       </button>
 
-      <Dots imgIndex={imgIndex} setImgIndex={setImgIndex} length={posts.length} />
+      <Dots
+        imgIndex={imgIndex}
+        setImgIndex={setImgIndex}
+        length={posts.length}
+      />
     </div>
   );
 };
@@ -117,7 +121,7 @@ const Images = ({
           <motion.div
             key={post.id}
             style={{
-              backgroundImage: `url(${post.imageUrl || '/placeholder.webp'})`,
+              backgroundImage: `url(${post.imageUrl ?? "/placeholder.webp"})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
