@@ -79,7 +79,7 @@ const PostDisplay: FC<PostDisplayProps> = ({ id }) => {
           <div className="w-full text-center text-lg">Loading...</div>
         ) : (
           <div className="grid grid-cols-3 gap-4 *:w-full">
-            {relatedData?.map((p) => <PostCard post={p} />)}
+            {relatedData?.map((p) => <PostCard post={p} key={p.id} />)}
           </div>
         )}
       </div>
