@@ -1,18 +1,10 @@
-"use client";
+"use client"
 
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { motion, useMotionValue } from "framer-motion";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-
-// fetch postings from db later
-const imgs = [
-  "/placeholder.webp",
-  "/placeholder.webp",
-  "/placeholder.webp",
-  "/placeholder.webp",
-  "/placeholder.webp",
-  "/placeholder.webp",
-];
+import { api } from "~/trpc/react"; 
+import { Post } from "@prisma/client";
 
 const ONE_SECOND = 1000;
 const AUTO_DELAY = ONE_SECOND * 10;
@@ -28,6 +20,8 @@ const SPRING_OPTIONS = {
 export const SwipeCarousel = () => {
   const [imgIndex, setImgIndex] = useState(0);
 
+  const { data: posts = [] } = api.post.recentPosts.useQuery({ take: 6 });
+
   const dragX = useMotionValue(0);
 
   useEffect(() => {
@@ -36,7 +30,7 @@ export const SwipeCarousel = () => {
 
       if (x === 0) {
         setImgIndex((pv) => {
-          if (pv === imgs.length - 1) {
+          if (pv === posts.length - 1) {
             return 0;
           }
           return pv + 1;
@@ -45,28 +39,12 @@ export const SwipeCarousel = () => {
     }, AUTO_DELAY);
 
     return () => clearInterval(intervalRef);
-  }, []);
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "ArrowRight" && imgIndex < imgs.length - 1) {
-        setImgIndex((prev) => prev + 1);
-      } else if (event.key === "ArrowLeft" && imgIndex > 0) {
-        setImgIndex((prev) => prev - 1);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [imgIndex]);
+  }, [posts.length]);
 
   const onDragEnd = () => {
     const x = dragX.get();
 
-    if (x <= -DRAG_BUFFER && imgIndex < imgs.length - 1) {
+    if (x <= -DRAG_BUFFER && imgIndex < posts.length - 1) {
       setImgIndex((pv) => pv + 1);
     } else if (x >= DRAG_BUFFER && imgIndex > 0) {
       setImgIndex((pv) => pv - 1);
@@ -74,7 +52,7 @@ export const SwipeCarousel = () => {
   };
 
   const handleImageClick = (direction: "left" | "right") => {
-    if (direction === "right" && imgIndex < imgs.length - 1) {
+    if (direction === "right" && imgIndex < posts.length - 1) {
       setImgIndex((prev) => prev + 1);
     } else if (direction === "left" && imgIndex > 0) {
       setImgIndex((prev) => prev - 1);
@@ -93,13 +71,13 @@ export const SwipeCarousel = () => {
           x: dragX,
         }}
         animate={{
-          translateX: `-${imgIndex * 100}%`, // Move one image at a time
+          translateX: `-${imgIndex * 100}%`, // Move one post at a time
         }}
         transition={SPRING_OPTIONS}
         onDragEnd={onDragEnd}
         className="flex w-[80%] cursor-grab items-center active:cursor-grabbing" // Occupies 80% width for better centering
       >
-        <Images imgIndex={imgIndex} onClick={handleImageClick} />
+        <Images imgIndex={imgIndex} posts={posts} onClick={handleImageClick} />
       </motion.div>
 
       {/* Left Arrow */}
@@ -118,26 +96,28 @@ export const SwipeCarousel = () => {
         <FaArrowRight size={30} />
       </button>
 
-      <Dots imgIndex={imgIndex} setImgIndex={setImgIndex} />
+      <Dots imgIndex={imgIndex} setImgIndex={setImgIndex} length={posts.length} />
     </div>
   );
 };
 
 const Images = ({
   imgIndex,
+  posts,
   onClick,
 }: {
   imgIndex: number;
+  posts: Post[];
   onClick: (direction: "left" | "right") => void;
 }) => {
   return (
     <>
-      {imgs.map((imgSrc, idx) => {
+      {posts.map((post, idx) => {
         return (
           <motion.div
-            key={idx}
+            key={post.id}
             style={{
-              backgroundImage: `url(${imgSrc})`,
+              backgroundImage: `url(${post.imageUrl || '/placeholder.webp'})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
@@ -147,6 +127,11 @@ const Images = ({
             transition={SPRING_OPTIONS}
             className="relative aspect-video w-full shrink-0 rounded-xl bg-neutral-800 object-cover"
           >
+            {/* Display the post title or other details */}
+            <div className="absolute bottom-4 left-4 text-white">
+              <h2>{post.title}</h2>
+            </div>
+
             {/* Clickable areas for navigating left and right */}
             <div
               onClick={() => onClick("left")}
@@ -166,13 +151,15 @@ const Images = ({
 const Dots = ({
   imgIndex,
   setImgIndex,
+  length,
 }: {
   imgIndex: number;
   setImgIndex: Dispatch<SetStateAction<number>>;
+  length: number;
 }) => {
   return (
     <div className="absolute bottom-0 left-0 right-0 mx-auto mt-4 flex justify-center gap-2">
-      {imgs.map((_, idx) => {
+      {Array.from({ length }).map((_, idx) => {
         return (
           <button
             key={idx}
