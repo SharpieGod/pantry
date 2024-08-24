@@ -2,6 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-input[type="text"] {
+input[type="text"]:not(#except) {
   @apply rounded-lg border border-secondary-800 bg-secondary-950 p-3 py-2 text-text-50;
 }

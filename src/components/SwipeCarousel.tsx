@@ -82,7 +82,7 @@ export const SwipeCarousel = () => {
   };
 
   return (
-    <div className="relative flex justify-center overflow-hidden bg-neutral-950 py-8">
+    <div className="relative flex justify-center overflow-hidden py-8">
       <motion.div
         drag="x"
         dragConstraints={{
@@ -97,7 +97,7 @@ export const SwipeCarousel = () => {
         }}
         transition={SPRING_OPTIONS}
         onDragEnd={onDragEnd}
-        className="flex cursor-grab items-center active:cursor-grabbing w-[80%]" // Occupies 80% width for better centering
+        className="flex w-[80%] cursor-grab items-center active:cursor-grabbing" // Occupies 80% width for better centering
       >
         <Images imgIndex={imgIndex} onClick={handleImageClick} />
       </motion.div>
@@ -105,7 +105,7 @@ export const SwipeCarousel = () => {
       {/* Left Arrow */}
       <button
         onClick={() => handleImageClick("left")}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white"
+        className="absolute left-4 top-1/2 z-10 -translate-y-1/2 text-white"
       >
         <FaArrowLeft size={30} />
       </button>
@@ -113,7 +113,7 @@ export const SwipeCarousel = () => {
       {/* Right Arrow */}
       <button
         onClick={() => handleImageClick("right")}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white"
+        className="absolute right-4 top-1/2 z-10 -translate-y-1/2 text-white"
       >
         <FaArrowRight size={30} />
       </button>
@@ -145,16 +145,16 @@ const Images = ({
               scale: imgIndex === idx ? 0.95 : 0.85,
             }}
             transition={SPRING_OPTIONS}
-            className="aspect-video w-full shrink-0 rounded-xl bg-neutral-800 object-cover relative"
+            className="relative aspect-video w-full shrink-0 rounded-xl bg-neutral-800 object-cover"
           >
             {/* Clickable areas for navigating left and right */}
             <div
               onClick={() => onClick("left")}
-              className="absolute left-0 top-0 bottom-0 w-1/2 cursor-pointer"
+              className="absolute bottom-0 left-0 top-0 w-1/2 cursor-pointer"
             />
             <div
               onClick={() => onClick("right")}
-              className="absolute right-0 top-0 bottom-0 w-1/2 cursor-pointer"
+              className="absolute bottom-0 right-0 top-0 w-1/2 cursor-pointer"
             />
           </motion.div>
         );
@@ -171,7 +171,7 @@ const Dots = ({
   setImgIndex: Dispatch<SetStateAction<number>>;
 }) => {
   return (
-    <div className="mt-4 flex justify-center gap-2 absolute bottom-0 left-0 right-0 mx-auto">
+    <div className="absolute bottom-0 left-0 right-0 mx-auto mt-4 flex justify-center gap-2">
       {imgs.map((_, idx) => {
         return (
           <button

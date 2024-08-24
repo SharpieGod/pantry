@@ -141,40 +141,20 @@ export const postRouter = createTRPCRouter({
       });
     }),
 
-  getPreviews: publicProcedure.query(async ({ ctx }) => {
-    const options = Object.values(FoodCategory);
-
-    const ret = await Promise.all(
-      options.map(async (e) => {
-        const posts = await ctx.db.post.findMany({
-          where: {
-            postState: PostState.PUBLIC,
-            category: e,
-          },
-          orderBy: {
-            publishedAt: "asc",
-          },
-          include: {
-            user: true,
-          },
-          take: 2,
-        });
-        return { [e]: posts };
-      }),
-    );
-
-    const result = ret.reduce(
-      (acc, item) => {
-        return {
-          ...acc,
-          ...item,
-        };
-      },
-      {} as Record<FoodCategory, (typeof ret)[0][string]>,
-    );
-
-    return result;
-  }),
+  changeArchiveStatus: protectedProcedure
+    .input(z.object({ id: z.string(), archive: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.post.update({
+        where: {
+          id: input.id,
+          userId: ctx.session.user.id,
+          postState: input.archive ? "PUBLIC" : "ARCHIVE",
+        },
+        data: {
+          postState: input.archive ? "ARCHIVE" : "PRIVATE",
+        },
+      });
+    }),
 
   changePublishedStatus: protectedProcedure
     .input(z.object({ id: z.string(), publish: z.boolean() }))

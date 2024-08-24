@@ -17,12 +17,14 @@ const Navbar: FC<NavbarProps> = async ({ search, query, filter }) => {
 
   return (
     <nav className="w-full">
-      <div className="flex w-full items-center justify-between gap-4 bg-background-900/50 p-4 px-12 text-xl">
+      <div className="relative flex w-full items-center justify-between gap-4 bg-background-900/50 p-4 px-12 text-xl">
         <Link href="/" className="text-3xl font-bold text-primary-400">
           pantry.
         </Link>
 
-        {search && <SearchBox query={query ?? ""} />}
+        <div className="absolute left-1/2 top-1/2 w-96 -translate-x-1/2 -translate-y-1/2">
+          {search && <SearchBox query={query ?? ""} />}
+        </div>
 
         <ul className="flex items-center gap-4">
           <NavLink href="/about">About</NavLink>

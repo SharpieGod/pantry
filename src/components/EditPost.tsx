@@ -41,6 +41,7 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
   } = api.post.getPost.useQuery({ id: postId });
 
   const [post, setPost] = useState<Post | null>(null);
+  const [uploadPending, setUploadPending] = useState(false);
   const [selectedOption, setSelectedOption] =
     useState<SelectElementOption | null>(null);
 
@@ -56,9 +57,9 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
       setPost((prev) =>
         prev
           ? {
-            ...prev,
-            category: selectedOption.value as FoodCategory,
-          }
+              ...prev,
+              category: selectedOption.value as FoodCategory,
+            }
           : null,
       );
     }
@@ -170,23 +171,23 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
       </div>
 
       {/* Image and Upload Section */}
-      <div className="flex flex-col gap-4 items-center">
-        {post?.imageUrl ? (
+      <div className="flex flex-col items-center gap-4">
+        {post?.imageUrl && !uploadPending ? (
           <Image
             src={post.imageUrl}
             alt="Uploaded Image"
-            width={350}
-            height={350}
-            className="w-[400px] h-[400px] rounded-lg object-cover"
+            width={1000}
+            height={1000}
+            className="max-h-[800px] w-[800px] rounded-lg object-cover"
           />
         ) : (
           <div className="flex flex-col items-center">
             <Image
               src="/placeholder.webp"
               alt="Placeholder Image"
-              width={350}
-              height={350}
-              className="w-[400px] h-[400px] rounded-lg object-cover"
+              width={1000}
+              height={1000}
+              className="max-h-[800px] w-[800px] rounded-lg object-cover"
             />
             <p>No image uploaded</p>
           </div>
@@ -196,44 +197,47 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
           input={{ postId: post?.id ?? "" }}
           endpoint="imageUploader"
           onUploadBegin={() => {
+            setUploadPending(true);
             setPost((prev) => (prev ? { ...prev, imageUrl: null } : null));
           }}
           onUploadAborted={() => {
+            setUploadPending(false);
             setPost((prev) =>
               prev
                 ? {
-                  ...prev,
-                  imageUrl: post?.imageUrl ?? null,
-                }
+                    ...prev,
+                    imageUrl: post?.imageUrl ?? null,
+                  }
                 : null,
             );
           }}
           onUploadError={() => {
+            setUploadPending(false);
             setPost((prev) =>
               prev
                 ? {
-                  ...prev,
-                  imageUrl: post?.imageUrl ?? null,
-                }
+                    ...prev,
+                    imageUrl: post?.imageUrl ?? null,
+                  }
                 : null,
             );
           }}
           onClientUploadComplete={(res) => {
+            setUploadPending(false);
             setPost((prev) =>
               prev
                 ? {
-                  ...prev,
-                  imageUrl: res[0]?.url ?? "",
-                }
+                    ...prev,
+                    imageUrl: res[0]?.url ?? "",
+                  }
                 : null,
             );
           }}
         />
       </div>
 
-      {/* Save and Publish Buttons */}
-      <div className="flex w-full gap-4 mt-4">
-        <div className="w-1/2">
+      {post && (
+        <div className="flex w-full gap-4 [&>*]:flex-1">
           <DarkoButton
             disabled={updatePending}
             onClick={() => {
@@ -245,7 +249,7 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
                 });
               else toast.info("Already up to date");
             }}
-            className="w-full h-10"
+            className="h-12 w-full"
             variant="secondary"
           >
             <div className="flex items-center justify-center gap-1">
@@ -259,62 +263,57 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
               )}
             </div>
           </DarkoButton>
-        </div>
+          <DarkoButton
+            className="h-12 w-full"
+            disabled={publishedPending}
+            variant="primary"
+            onClick={() => {
+              if (!post.category && post.postState === "PRIVATE") {
+                toast.error("Please select a category to publish");
+                return;
+              }
 
-        {post && (
-          <div className="w-1/2">
-            <DarkoButton
-              className="w-full h-10"
-              disabled={publishedPending}
-              variant="primary"
-              onClick={() => {
-                if (!post.category && post.postState === "PRIVATE") {
-                  toast.error("Please select a category to publish");
-                  return;
-                }
+              if (!post.title.trim() && post.postState === "PRIVATE") {
+                toast.error("Title cannot be blank");
+                return;
+              }
 
-                if (!post.title.trim() && post.postState === "PRIVATE") {
-                  toast.error("Title cannot be blank");
-                  return;
-                }
+              if (!post.imageUrl && post.postState === "PRIVATE") {
+                toast.error("Please upload an image, cannot be blank");
+                return;
+              }
 
-                if (!post.imageUrl && post.postState === "PRIVATE") {
-                  toast.error("Please upload an image, cannot be blank");
-                  return;
-                }
-
-                if (JSON.stringify(post) !== JSON.stringify(fetchedPost))
-                  updatePost({
-                    title: post.title,
-                    id: post.id,
-                    category: post.category!,
-                  });
-
-                changePublished({
+              if (JSON.stringify(post) !== JSON.stringify(fetchedPost))
+                updatePost({
+                  title: post.title,
                   id: post.id,
-                  publish: post.postState === "PRIVATE",
+                  category: post.category!,
                 });
-              }}
-            >
-              <div className="flex items-center justify-center gap-2">
-                {publishedPending ? (
-                  <VscLoading className="animate-spin" />
-                ) : post.postState === "PRIVATE" ? (
-                  <>
-                    <span>Publish</span>
-                    <LuEye />
-                  </>
-                ) : (
-                  <>
-                    <span>Private</span>
-                    <LuEyeOff />
-                  </>
-                )}
-              </div>
-            </DarkoButton>
-          </div>
-        )}
-      </div>
+
+              changePublished({
+                id: post.id,
+                publish: post.postState === "PRIVATE",
+              });
+            }}
+          >
+            <div className="flex items-center justify-center gap-2">
+              {publishedPending ? (
+                <VscLoading className="animate-spin" />
+              ) : post.postState === "PRIVATE" ? (
+                <>
+                  <span>Publish</span>
+                  <LuEye />
+                </>
+              ) : (
+                <>
+                  <span>Private</span>
+                  <LuEyeOff />
+                </>
+              )}
+            </div>
+          </DarkoButton>
+        </div>
+      )}
     </div>
   );
 };

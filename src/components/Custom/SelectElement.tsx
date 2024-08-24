@@ -54,6 +54,7 @@ const SelectElement: FC<SelectElementProps> = ({
           <div className="flex items-center justify-between border-b border-secondary-800 bg-secondary-950 px-1 py-2">
             <input
               type="text"
+              id="except"
               className="flex-1 bg-transparent p-2 py-1 focus:outline-none"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
