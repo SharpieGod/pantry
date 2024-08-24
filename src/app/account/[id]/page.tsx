@@ -30,7 +30,7 @@ const AccountPage: FC<AccountPageProps> = async ({ params: { id } }) => {
   return (
     <div>
       <Navbar />
-      <div className="mx-auto w-3/5">
+      <div className="mx-auto w-3/5 mt-16">
         <h1 className="py-4 text-2xl font-semibold opacity-80">
           {user.name}'s Posts
         </h1>
