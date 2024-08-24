@@ -12,28 +12,19 @@ export const postRouter = createTRPCRouter({
     .input(
       z.object({
         query: z.string(),
-        filter: z.nativeEnum(FoodCategory).nullable(),
+        take: z.number(),
+        exclude: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      if (input.filter) {
-        return await ctx.db.$queryRaw<Post[]>`
-          SELECT p.*,
-                MAX(similarity(p.title, ${input.query})) as relevance
-          FROM "Post" p
-          WHERE p."postState" = 'PUBLIC'::"PostState" AND p."category" = ${input.filter}::"FoodCategory"
-          GROUP BY p.id
-          ORDER BY relevance DESC, p."publishedAt" DESC;
-        `;
-      }
-
       return await ctx.db.$queryRaw<Post[]>`
           SELECT p.*,
                 MAX(similarity(p.title, ${input.query})) as relevance
           FROM "Post" p
-          WHERE p."postState" = 'PUBLIC'::"PostState"
+          WHERE p."postState" = 'PUBLIC'::"PostState" AND p."id" != ${input.exclude}
           GROUP BY p.id
-          ORDER BY relevance DESC, p."publishedAt" DESC;
+          ORDER BY relevance DESC, p."publishedAt" DESC
+          LIMIT ${input.take}
         `;
     }),
 

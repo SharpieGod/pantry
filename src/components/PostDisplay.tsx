@@ -6,6 +6,7 @@ import { api } from "~/trpc/react";
 import { FoodCategoryReadable } from "~/types";
 import { IoMailOutline } from "react-icons/io5";
 import DarkoButton from "./Custom/DarkoButton";
+import PostCard from "./PostCard";
 
 interface PostDisplayProps {
   id: string;
@@ -15,6 +16,13 @@ const PostDisplay: FC<PostDisplayProps> = ({ id }) => {
   const { data: postData, isLoading: postLoading } = api.post.getPost.useQuery({
     id,
   });
+
+  const { data: relatedData, isLoading: relatedLoading } =
+    api.post.searchPosts.useQuery({
+      query: postData?.title ?? "",
+      take: 3,
+      exclude: postData?.id ?? "",
+    });
 
   return postLoading ? (
     <div className="w-full p-4 text-center text-lg">Loading...</div>
@@ -60,6 +68,16 @@ const PostDisplay: FC<PostDisplayProps> = ({ id }) => {
             <IoMailOutline className="" size={32} />
           </DarkoButton>
         </a>
+      </div>
+      <div className="absolute bottom-8 left-1/2 flex w-3/5 -translate-x-1/2 flex-col gap-2">
+        <h1 className="text-xl opacity-80">Related</h1>
+        {relatedLoading ? (
+          <div className="w-full text-center text-lg">Loading...</div>
+        ) : (
+          <div className="grid grid-cols-3 gap-4 *:w-full">
+            {relatedData?.map((p) => <PostCard post={p} />)}
+          </div>
+        )}
       </div>
     </div>
   );

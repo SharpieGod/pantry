@@ -14,8 +14,8 @@ const NoFilterSearchPage: FC<NoFilterSearchPageProps> = ({
 }) => {
   return (
     <div>
-      <Navbar search query={decodeURI(query)} filter={null} />
-      <SearchResults query={decodeURI(query)} filter={null} />
+      <Navbar search query={decodeURI(query)} />
+      <SearchResults query={decodeURI(query)} />
     </div>
   );
 };

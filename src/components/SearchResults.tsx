@@ -6,13 +6,13 @@ import PostCard from "./PostCard";
 
 interface SearchResultsProps {
   query: string;
-  filter: FoodCategory | null;
 }
 
-const SearchResults: FC<SearchResultsProps> = ({ query, filter }) => {
+const SearchResults: FC<SearchResultsProps> = ({ query }) => {
   const { data: results, isLoading } = api.post.searchPosts.useQuery({
     query,
-    filter,
+    take: 12,
+    exclude: "",
   });
 
   return (
