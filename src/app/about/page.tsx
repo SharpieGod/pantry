@@ -8,10 +8,12 @@ const AboutPage = async () => {
   const session = await getServerAuthSession();
 
   return (
-    <div className="min-h-screen bg-50 text-300">
+    <div className="bg-50 text-300 min-h-screen">
       <Navbar />
       <div className="mx-36 mt-24">
-        <h2 className="text-2xl font-bold text-[#f0b090]">Mission statement</h2>
+        <h2 className="text-2xl font-bold text-accent-300">
+          Mission statement
+        </h2>
         <p className="mt-2 text-lg">
           At Pantry, our mission is to create a community-driven platform where
           surplus food finds a new home. We aim to reduce food waste, foster
@@ -20,7 +22,7 @@ const AboutPage = async () => {
         </p>
       </div>
       <div className="mx-36 mt-4">
-        <h2 className="text-2xl font-bold text-[#f0b090]">Why?</h2>
+        <h2 className="text-2xl font-bold text-accent-300">Why?</h2>
         <p className="mt-2 text-lg">
           Every year, millions of pounds of perfectly good, non-perishable food
           items are discarded, contributing to the growing problem of food
@@ -32,7 +34,7 @@ const AboutPage = async () => {
         </p>
       </div>
       <div className="mx-36 mt-4">
-        <h2 className="text-2xl font-bold text-[#f0b090]">Overview</h2>
+        <h2 className="text-2xl font-bold text-accent-300">Overview</h2>
         <p className="mt-2 text-lg">
           Pantry is a unique platform where users can easily list non-perishable
           food items they no longer need. Whether it&apos;s extra cans of soup,
@@ -44,7 +46,7 @@ const AboutPage = async () => {
         </p>
       </div>
       <div className="mx-36 mt-8 flex flex-col items-center justify-center">
-        <h2 className="text-2xl font-bold text-[#f0b090]">
+        <h2 className="text-2xl font-bold text-accent-300">
           Contact Information
         </h2>
         <p className="mt-2 text-center text-lg">

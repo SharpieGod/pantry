@@ -75,9 +75,13 @@ export const SwipeCarousel = () => {
         }}
         transition={SPRING_OPTIONS}
         onDragEnd={onDragEnd}
-        className="flex w-[80%] cursor-grab items-center active:cursor-grabbing" 
+        className="flex w-[80%] cursor-grab items-center active:cursor-grabbing"
       >
-        <Images imgIndex={imgIndex} posts={posts} onClick={handleImageClick} />
+        <Images
+          imgIndex={imgIndex}
+          posts={posts as (Post & { user: { name: string; image: string } })[]}
+          onClick={handleImageClick}
+        />
       </motion.div>
 
       {/* Left Arrow */}
