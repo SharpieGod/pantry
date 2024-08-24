@@ -17,11 +17,11 @@ const SearchResults: FC<SearchResultsProps> = ({ query }) => {
 
   return (
     <div>
-      {isLoading && (
-        <div className="w-full p-4 text-center text-lg">Loading...</div>
-      )}
       <div className="mx-auto w-3/5">
-        <h1 className="pb-4 text-2xl">Results for {query}</h1>
+        <h1 className="py-4 text-2xl">Results for {query}</h1>
+        {isLoading && (
+          <div className="w-full p-4 text-center text-lg">Loading...</div>
+        )}
         <ul className="grid grid-cols-3 gap-8 *:w-full">
           {results?.map((p) => <PostCard post={p} key={p.id} />)}
         </ul>

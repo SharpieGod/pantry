@@ -70,12 +70,16 @@ const PostDisplay: FC<PostDisplayProps> = ({ id }) => {
         </a>
       </div>
       <div className="absolute bottom-8 left-1/2 flex w-3/5 -translate-x-1/2 flex-col gap-2">
-        <h1 className="text-xl opacity-80">Related</h1>
+        {relatedLoading ||
+          (relatedData && relatedData?.length > 0 && (
+            <h1 className="text-xl opacity-80">Related</h1>
+          ))}
+
         {relatedLoading ? (
           <div className="w-full text-center text-lg">Loading...</div>
         ) : (
           <div className="grid grid-cols-3 gap-4 *:w-full">
-            {relatedData?.map((p) => <PostCard post={p} />)}
+            {relatedData?.map((p) => <PostCard post={p} key={p.id} />)}
           </div>
         )}
       </div>

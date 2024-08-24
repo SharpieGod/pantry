@@ -10,7 +10,7 @@ interface EditPostPageProps {
 
 const EditPostPage: FC<EditPostPageProps> = async ({ params: { id } }) => {
   return (
-    <div>
+    <div className="">
       <Navbar />
       <EditPost postId={id} />
     </div>
