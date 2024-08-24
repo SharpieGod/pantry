@@ -146,31 +146,36 @@ export const postRouter = createTRPCRouter({
       });
     }),
 
-  recentPosts: publicProcedure
-  .input(
-    z.object({
-      take: z.number().optional().default(6),
-    })
-  )
-  .query(async ({ ctx, input }) => {
-    return await ctx.db.post.findMany({
-      where: {
-        postState: PostState.PUBLIC,
-      },
-      orderBy: {
-        publishedAt: "desc",
-      },
-      take: input.take,
-      include: {
-        user: {
-          select: {
-            name: true,
-            image: true,
+    recentPosts: publicProcedure
+    .input(
+      z.object({
+        take: z.number().optional().default(6),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.post.findMany({
+        where: {
+          postState: PostState.PUBLIC,
+        },
+        orderBy: {
+          publishedAt: "desc",
+        },
+        take: input.take,
+        select: {
+          id: true,
+          title: true,
+          category: true,
+          imageUrl: true,
+          user: {
+            select: {
+              name: true,
+              image: true,
+            },
           },
         },
-      },
-    });
-  }),
+      });
+    }),
+  
 
   changeArchiveStatus: protectedProcedure
     .input(z.object({ id: z.string(), archive: z.boolean() }))

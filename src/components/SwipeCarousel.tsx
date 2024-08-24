@@ -75,7 +75,7 @@ export const SwipeCarousel = () => {
         }}
         transition={SPRING_OPTIONS}
         onDragEnd={onDragEnd}
-        className="flex w-[80%] cursor-grab items-center active:cursor-grabbing" // Occupies 80% width for better centering
+        className="flex w-[80%] cursor-grab items-center active:cursor-grabbing" 
       >
         <Images imgIndex={imgIndex} posts={posts} onClick={handleImageClick} />
       </motion.div>
