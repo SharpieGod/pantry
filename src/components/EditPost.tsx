@@ -56,9 +56,9 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
       setPost((prev) =>
         prev
           ? {
-              ...prev,
-              category: selectedOption.value as FoodCategory,
-            }
+            ...prev,
+            category: selectedOption.value as FoodCategory,
+          }
           : null,
       );
     }
@@ -169,38 +169,102 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
         </div>
       </div>
 
-      <div className="flex gap-4">
-        <DarkoButton
-          disabled={updatePending}
-          onClick={() => {
-            if (post && JSON.stringify(post) !== JSON.stringify(fetchedPost))
-              updatePost({
-                title: post.title,
-                id: post.id,
-                category: post.category!,
-              });
-            else toast.info("Already up to date");
-          }}
-          className="flex h-10 w-28 items-center justify-center"
-          variant="secondary"
-        >
-          <div className="flex items-center justify-center gap-1">
-            {updatePending ? (
-              <>
-                <VscLoading className="animate-spin" />
-              </>
-            ) : (
-              <>
-                <span>Save</span>
-                <LuSave size={16} />
-              </>
-            )}
+      {/* Image and Upload Section */}
+      <div className="flex flex-col gap-4 items-center">
+        {post?.imageUrl ? (
+          <Image
+            src={post.imageUrl}
+            alt="Uploaded Image"
+            width={350}
+            height={350}
+            className="w-[400px] h-[400px] rounded-lg object-cover"
+          />
+        ) : (
+          <div className="flex flex-col items-center">
+            <Image
+              src="/placeholder.webp"
+              alt="Placeholder Image"
+              width={350}
+              height={350}
+              className="w-[400px] h-[400px] rounded-lg object-cover"
+            />
+            <p>No image uploaded</p>
           </div>
-        </DarkoButton>
+        )}
+        <UploadButton
+          className="[&>label]:bg-primary-300 [&>label]:text-text-950"
+          input={{ postId: post?.id ?? "" }}
+          endpoint="imageUploader"
+          onUploadBegin={() => {
+            setPost((prev) => (prev ? { ...prev, imageUrl: null } : null));
+          }}
+          onUploadAborted={() => {
+            setPost((prev) =>
+              prev
+                ? {
+                  ...prev,
+                  imageUrl: post?.imageUrl ?? null,
+                }
+                : null,
+            );
+          }}
+          onUploadError={() => {
+            setPost((prev) =>
+              prev
+                ? {
+                  ...prev,
+                  imageUrl: post?.imageUrl ?? null,
+                }
+                : null,
+            );
+          }}
+          onClientUploadComplete={(res) => {
+            setPost((prev) =>
+              prev
+                ? {
+                  ...prev,
+                  imageUrl: res[0]?.url ?? "",
+                }
+                : null,
+            );
+          }}
+        />
+      </div>
+
+      {/* Save and Publish Buttons */}
+      <div className="flex w-full gap-4 mt-4">
+        <div className="w-1/2">
+          <DarkoButton
+            disabled={updatePending}
+            onClick={() => {
+              if (post && JSON.stringify(post) !== JSON.stringify(fetchedPost))
+                updatePost({
+                  title: post.title,
+                  id: post.id,
+                  category: post.category!,
+                });
+              else toast.info("Already up to date");
+            }}
+            className="w-full h-10"
+            variant="secondary"
+          >
+            <div className="flex items-center justify-center gap-1">
+              {updatePending ? (
+                <VscLoading className="animate-spin" />
+              ) : (
+                <>
+                  <span>Save</span>
+                  <LuSave size={16} />
+                </>
+              )}
+            </div>
+          </DarkoButton>
+        </div>
+
         {post && (
-          <div>
+          <div className="w-1/2">
             <DarkoButton
-              className="flex h-10 w-28 items-center justify-center"
+              className="w-full h-10"
               disabled={publishedPending}
               variant="primary"
               onClick={() => {
@@ -232,7 +296,7 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
                 });
               }}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center gap-2">
                 {publishedPending ? (
                   <VscLoading className="animate-spin" />
                 ) : post.postState === "PRIVATE" ? (
@@ -251,54 +315,6 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
           </div>
         )}
       </div>
-
-      {post?.imageUrl && (
-        <Image
-          src={post.imageUrl}
-          alt=""
-          width={1000}
-          height={1000}
-          className="w-1/2 rounded-lg"
-        />
-      )}
-      <UploadButton
-        className="[&>label]:bg-primary-300 [&>label]:text-text-950"
-        input={{ postId: post?.id ?? "" }}
-        endpoint="imageUploader"
-        onUploadBegin={() => {
-          setPost((prev) => (prev ? { ...prev, imageUrl: null } : null));
-        }}
-        onUploadAborted={() => {
-          setPost((prev) =>
-            prev
-              ? {
-                  ...prev,
-                  imageUrl: post?.imageUrl ?? null,
-                }
-              : null,
-          );
-        }}
-        onUploadError={() => {
-          setPost((prev) =>
-            prev
-              ? {
-                  ...prev,
-                  imageUrl: post?.imageUrl ?? null,
-                }
-              : null,
-          );
-        }}
-        onClientUploadComplete={(res) => {
-          setPost((prev) =>
-            prev
-              ? {
-                  ...prev,
-                  imageUrl: res[0]?.url ?? "",
-                }
-              : null,
-          );
-        }}
-      />
     </div>
   );
 };
