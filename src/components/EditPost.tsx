@@ -13,6 +13,7 @@ import Image from "next/image";
 import { cn } from "~/lib/utils";
 import { useRouter } from "next/navigation";
 import { VscLoading } from "react-icons/vsc";
+import { LuEye, LuEyeOff, LuSave } from "react-icons/lu";
 
 interface EditPostProps {
   postId: string;
@@ -65,6 +66,21 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
 
   const { mutate: changePublished, isPending: publishedPending } =
     api.post.changePublishedStatus.useMutation({
+      onMutate: (input) => {
+        if (!post) return;
+        utils.post.getPost.setData(
+          { id: post?.id ?? "" },
+          {
+            ...post,
+            postState: input.publish ? "PUBLIC" : "PRIVATE",
+            user: {
+              name: "",
+              image: "",
+              email: "",
+            },
+          },
+        );
+      },
       onSuccess: (res) => {
         setPost(res);
       },
@@ -77,7 +93,16 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
           const originalPost = { ...post };
           utils.post.getPost.setData(
             { id: input.id },
-            { ...post, title: input.title, category: input.category },
+            {
+              ...post,
+              title: input.title,
+              category: input.category,
+              user: {
+                email: "",
+                name: "",
+                image: "",
+              },
+            },
           );
           return originalPost;
         }
@@ -91,7 +116,12 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
       onError: (err, variables, context) => {
         toast.error(err.message);
         if (context) {
-          utils.post.getPost.setData({ id: context.id ?? "" }, context as Post);
+          utils.post.getPost.setData(
+            { id: context.id ?? "" },
+            context as Post & {
+              user: { name: string; image: string; email: string };
+            },
+          );
         }
       },
     });
@@ -101,17 +131,20 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
   if (!fetchedPost && !isLoading) router.push("/account");
 
   return (
-    <div className="mx-auto flex w-3/5 flex-col gap-4 pt-4">
+    <div className="mx-auto flex w-3/5 flex-col gap-8 pt-4">
       <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-1 text-text-50 opacity-80">
-          {updatePending ? (
-            <span>Saving...</span>
-          ) : (
-            <div className="flex items-center gap-2 opacity-80">
-              <span>Saved</span>
-            </div>
-          )}
-          <FaCheck className={cn({ hidden: updatePending })} />
+        <div className="flex flex-col">
+          <div className="flex items-center gap-1 text-text-50 opacity-80">
+            {updatePending ? <span>Saving...</span> : <span>Saved</span>}
+            <FaCheck className={cn({ hidden: updatePending })} />
+          </div>
+          <div className="flex items-center gap-1 text-text-50 opacity-80">
+            {post?.postState === "PUBLIC" ? (
+              <span>Public</span>
+            ) : (
+              <span>Private</span>
+            )}
+          </div>
         </div>
         <div className="grid grid-cols-3 gap-4">
           <input
@@ -136,22 +169,100 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
         </div>
       </div>
 
-      <DarkoButton
-        onClick={() => {
-          if (post) {
-            updatePost({
-              title: post.title,
-              id: post.id,
-              category: post.category!,
-            });
-          }
-        }}
-        className="w-24"
-        variant="secondary"
-      >
-        Save
-      </DarkoButton>
+      <div className="flex gap-4">
+        <DarkoButton
+          disabled={updatePending}
+          onClick={() => {
+            if (post && JSON.stringify(post) !== JSON.stringify(fetchedPost))
+              updatePost({
+                title: post.title,
+                id: post.id,
+                category: post.category!,
+              });
+            else toast.info("Already up to date");
+          }}
+          className="flex h-10 w-28 items-center justify-center"
+          variant="secondary"
+        >
+          <div className="flex items-center justify-center gap-1">
+            {updatePending ? (
+              <>
+                <VscLoading className="animate-spin" />
+              </>
+            ) : (
+              <>
+                <span>Save</span>
+                <LuSave size={16} />
+              </>
+            )}
+          </div>
+        </DarkoButton>
+        {post && (
+          <div>
+            <DarkoButton
+              className="flex h-10 w-28 items-center justify-center"
+              disabled={publishedPending}
+              variant="primary"
+              onClick={() => {
+                if (!post.category && post.postState === "PRIVATE") {
+                  toast.error("Please select a category to publish");
+                  return;
+                }
+
+                if (!post.title.trim() && post.postState === "PRIVATE") {
+                  toast.error("Title cannot be blank");
+                  return;
+                }
+
+                if (!post.imageUrl && post.postState === "PRIVATE") {
+                  toast.error("Please upload an image, cannot be blank");
+                  return;
+                }
+
+                if (JSON.stringify(post) !== JSON.stringify(fetchedPost))
+                  updatePost({
+                    title: post.title,
+                    id: post.id,
+                    category: post.category!,
+                  });
+
+                changePublished({
+                  id: post.id,
+                  publish: post.postState === "PRIVATE",
+                });
+              }}
+            >
+              <div className="flex items-center gap-2">
+                {publishedPending ? (
+                  <VscLoading className="animate-spin" />
+                ) : post.postState === "PRIVATE" ? (
+                  <>
+                    <span>Publish</span>
+                    <LuEye />
+                  </>
+                ) : (
+                  <>
+                    <span>Private</span>
+                    <LuEyeOff />
+                  </>
+                )}
+              </div>
+            </DarkoButton>
+          </div>
+        )}
+      </div>
+
+      {post?.imageUrl && (
+        <Image
+          src={post.imageUrl}
+          alt=""
+          width={1000}
+          height={1000}
+          className="w-1/2 rounded-lg"
+        />
+      )}
       <UploadButton
+        className="[&>label]:bg-primary-300 [&>label]:text-text-950"
         input={{ postId: post?.id ?? "" }}
         endpoint="imageUploader"
         onUploadBegin={() => {
@@ -188,32 +299,6 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
           );
         }}
       />
-      {post?.imageUrl && (
-        <Image src={post.imageUrl} alt="" width={500} height={300} />
-      )}
-      {post && (
-        <div>
-          <DarkoButton
-            className="flex h-10 w-24 items-center justify-center"
-            disabled={publishedPending}
-            variant="primary"
-            onClick={() =>
-              changePublished({
-                id: post.id,
-                publish: post.postState === "PRIVATE",
-              })
-            }
-          >
-            {publishedPending ? (
-              <VscLoading className="animate-spin" />
-            ) : post.postState === "PRIVATE" ? (
-              <span>Publish</span>
-            ) : (
-              <span>Private</span>
-            )}
-          </DarkoButton>
-        </div>
-      )}
     </div>
   );
 };

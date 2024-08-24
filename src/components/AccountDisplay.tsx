@@ -28,13 +28,13 @@ const AccountDisplay: FC<AccountDisplayProps> = ({ userId, isSelf }) => {
   ) : (
     <div>
       <div className="mx-auto w-3/5">
-        <h1 className="py-4 text-2xl font-semibold opacity-80">
+        <h1 className="py-4 text-3xl font-semibold opacity-80">
           {isSelf ? `Hello, ${user?.name}` : `${user?.name}'s profile`}
         </h1>
         {postsLoading ? (
           <span>Loading...</span>
         ) : (
-          <ul className="flex flex-wrap items-center gap-8">
+          <ul className="grid grid-cols-3 items-center gap-8 *:w-full">
             {posts?.map((p) =>
               isSelf ? (
                 <PostCardEdit post={p} key={p.id} />

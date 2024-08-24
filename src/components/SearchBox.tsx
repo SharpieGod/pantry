@@ -15,7 +15,7 @@ const SearchBox: FC<SearchBoxProps> = ({ query }) => {
         e.preventDefault();
         e.stopPropagation();
 
-        router.push(`/search/${searchText}`);
+        router.push(`/search/${searchText}/test`);
       }}
     >
       <input

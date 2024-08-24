@@ -5,12 +5,14 @@ import DarkoButton from "./Custom/DarkoButton";
 import { FaSearch } from "react-icons/fa";
 import NewPostButton from "./NewPostButton";
 import SearchBox from "./SearchBox";
+import { FoodCategory } from "@prisma/client";
 
 interface NavbarProps {
   search?: boolean;
   query?: string;
+  filter?: FoodCategory | null;
 }
-const Navbar: FC<NavbarProps> = async ({ search, query }) => {
+const Navbar: FC<NavbarProps> = async ({ search, query, filter }) => {
   const session = await getServerAuthSession();
 
   return (

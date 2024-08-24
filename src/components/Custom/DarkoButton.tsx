@@ -34,7 +34,7 @@ const DarkoButton: FC<DarkoButtonProps> = ({
         {...props}
         className={cn(
           "relative overflow-hidden",
-          "rounded p-5 py-2 text-lg transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-30",
+          "rounded-lg p-5 py-2 text-lg transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-30",
           {
             "bg-red-500/80": variant === "danger",
             "hover:bg-red-500/60": variant === "danger" && !props.disabled,
