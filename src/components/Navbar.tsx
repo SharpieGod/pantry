@@ -4,18 +4,25 @@ import { getServerAuthSession } from "~/server/auth";
 import DarkoButton from "./Custom/DarkoButton";
 import { FaSearch } from "react-icons/fa";
 import NewPostButton from "./NewPostButton";
+import SearchBox from "./SearchBox";
 
-const Navbar = async () => {
+interface NavbarProps {
+  search?: boolean;
+  query?: string;
+}
+const Navbar: FC<NavbarProps> = async ({ search, query }) => {
   const session = await getServerAuthSession();
 
   return (
-    <nav className="mt-4 w-full">
-      <div className="flex h-20 w-auto items-center justify-between rounded-full border border-background-800 px-12 text-xl md:mx-auto md:w-3/5">
+    <nav className="w-full">
+      <div className="flex w-full items-center justify-between gap-4 bg-background-900/50 p-4 px-12 text-xl">
         <Link href="/" className="text-3xl font-bold text-primary-400">
           pantry.
         </Link>
 
-        <ul className="flex gap-4">
+        {search && <SearchBox query={query ?? ""} />}
+
+        <ul className="flex items-center gap-4">
           <NavLink href="/about">About</NavLink>
 
           {session ? (

@@ -11,6 +11,8 @@ import { UploadButton } from "~/utils/uploadthing";
 import DarkoButton from "./Custom/DarkoButton";
 import Image from "next/image";
 import { cn } from "~/lib/utils";
+import { useRouter } from "next/navigation";
+import { VscLoading } from "react-icons/vsc";
 
 interface EditPostProps {
   postId: string;
@@ -18,6 +20,7 @@ interface EditPostProps {
 
 const EditPost: FC<EditPostProps> = ({ postId }) => {
   const utils = api.useUtils();
+  const router = useRouter();
 
   const selectOptions: SelectElementOption[] = Object.entries(
     FoodCategoryReadable,
@@ -81,8 +84,8 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
         return undefined;
       },
 
-      onSuccess: () => {
-        utils.post.listByUser.invalidate();
+      onSuccess: async () => {
+        await utils.post.listByUser.invalidate();
       },
 
       onError: (err, variables, context) => {
@@ -95,6 +98,7 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
 
   if (isLoading) return <div>Loading...</div>;
   if (isError || !fetchedPost) return <div>Error loading post.</div>;
+  if (!fetchedPost && !isLoading) router.push("/account");
 
   return (
     <div className="mx-auto flex w-3/5 flex-col gap-4 pt-4">
@@ -142,7 +146,7 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
             });
           }
         }}
-        className="w-40"
+        className="w-24"
         variant="secondary"
       >
         Save
@@ -187,26 +191,29 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
       {post?.imageUrl && (
         <Image src={post.imageUrl} alt="" width={500} height={300} />
       )}
-      <div>
-        {post?.postState === PostState.PRIVATE && (
+      {post && (
+        <div>
           <DarkoButton
+            className="flex h-10 w-24 items-center justify-center"
             disabled={publishedPending}
             variant="primary"
-            onClick={() => changePublished({ id: post.id, publish: true })}
+            onClick={() =>
+              changePublished({
+                id: post.id,
+                publish: post.postState === "PRIVATE",
+              })
+            }
           >
-            Publish
+            {publishedPending ? (
+              <VscLoading className="animate-spin" />
+            ) : post.postState === "PRIVATE" ? (
+              <span>Publish</span>
+            ) : (
+              <span>Private</span>
+            )}
           </DarkoButton>
-        )}
-        {post?.postState === PostState.PUBLIC && (
-          <DarkoButton
-            disabled={publishedPending}
-            variant="primary"
-            onClick={() => changePublished({ id: post.id, publish: false })}
-          >
-            Private
-          </DarkoButton>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

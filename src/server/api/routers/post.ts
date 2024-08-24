@@ -152,9 +152,14 @@ export const postRouter = createTRPCRouter({
       }),
     );
 
-    const result: Record<FoodCategory, (typeof ret)[0][string]> = Object.assign(
-      {},
-      ...ret,
+    const result = ret.reduce(
+      (acc, item) => {
+        return {
+          ...acc,
+          ...item,
+        };
+      },
+      {} as Record<FoodCategory, (typeof ret)[0][string]>,
     );
 
     return result;
