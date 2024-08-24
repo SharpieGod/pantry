@@ -6,7 +6,7 @@ import PostCard from "./PostCard";
 import PostCardEdit from "./PostCardEdit";
 import { api } from "~/trpc/react";
 import { Post } from "@prisma/client";
-import { LuEye, LuEyeOff } from "react-icons/lu";
+import { LuArchive, LuEye, LuEyeOff } from "react-icons/lu";
 
 interface AccountDisplayProps {
   userId: string;
@@ -26,6 +26,7 @@ const AccountDisplay: FC<AccountDisplayProps> = ({ userId, isSelf }) => {
 
   const [publicPosts, setPublicPosts] = useState<Post[]>([]);
   const [privatePosts, setPrivatePosts] = useState<Post[]>([]);
+  const [archivedPosts, setArchivedPosts] = useState<Post[]>([]);
 
   useEffect(() => {
     if (postsLoading || !posts) return;
@@ -39,9 +40,11 @@ const AccountDisplay: FC<AccountDisplayProps> = ({ userId, isSelf }) => {
       );
 
     const privatePosts = posts.filter((post) => post.postState === "PRIVATE");
+    const archivedPosts = posts.filter((post) => post.postState === "ARCHIVE");
 
     setPublicPosts(publicPosts);
     setPrivatePosts(privatePosts);
+    setArchivedPosts(archivedPosts);
   }, [posts, postsLoading]);
 
   return userLoading ? (
@@ -60,7 +63,7 @@ const AccountDisplay: FC<AccountDisplayProps> = ({ userId, isSelf }) => {
           </ul>
         ) : (
           <ul className="flex flex-col gap-16">
-            {publicPosts && (
+            {publicPosts.length > 0 && (
               <li className="flex flex-col gap-4">
                 <div className="flex items-center gap-2 opacity-80">
                   <h1 className="text-xl">Public Posts</h1>
@@ -73,7 +76,7 @@ const AccountDisplay: FC<AccountDisplayProps> = ({ userId, isSelf }) => {
                 </ul>
               </li>
             )}
-            {privatePosts && (
+            {privatePosts.length > 0 && (
               <li className="flex flex-col gap-4">
                 <div className="flex items-center gap-2 opacity-80">
                   <h1 className="text-xl">Private Posts</h1>
@@ -81,6 +84,19 @@ const AccountDisplay: FC<AccountDisplayProps> = ({ userId, isSelf }) => {
                 </div>
                 <ul className="grid grid-cols-3 items-center gap-8 *:w-full">
                   {privatePosts?.map((p) => (
+                    <PostCardEdit post={p} key={p.id} />
+                  ))}
+                </ul>
+              </li>
+            )}
+            {archivedPosts.length > 0 && (
+              <li className="flex flex-col gap-4">
+                <div className="flex items-center gap-2 opacity-80">
+                  <h1 className="text-xl">Archived Posts</h1>
+                  <LuArchive size={20} />
+                </div>
+                <ul className="grid grid-cols-3 items-center gap-8 *:w-full">
+                  {archivedPosts?.map((p) => (
                     <PostCardEdit post={p} key={p.id} />
                   ))}
                 </ul>
