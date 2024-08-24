@@ -22,7 +22,7 @@ const Navbar: FC<NavbarProps> = async ({ search, query, filter }) => {
           pantry.
         </Link>
 
-        <div className="absolute left-1/2 top-1/2 w-96 -translate-x-1/2 -translate-y-1/2">
+        <div className="absolute left-1/2 top-1/2 w-[500px] -translate-x-1/2 -translate-y-1/2">
           {search && <SearchBox query={query ?? ""} />}
         </div>
 

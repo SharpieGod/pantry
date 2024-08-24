@@ -82,8 +82,10 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
           },
         );
       },
-      onSuccess: (res) => {
+
+      onSuccess: async (res) => {
         setPost(res);
+        await utils.post.listByUser.invalidate();
       },
     });
 
@@ -127,12 +129,70 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
       },
     });
 
-  if (isLoading) return <div>Loading...</div>;
+  const { mutate: changeArchived, isPending: archivedPending } =
+    api.post.changeArchiveStatus.useMutation({
+      onMutate: (input) => {
+        if (!post) return;
+        utils.post.getPost.setData(
+          { id: post.id ?? "" },
+          {
+            ...post,
+            user: {
+              name: "",
+              image: "",
+              email: "",
+            },
+            postState: input.archive ? "ARCHIVE" : "PRIVATE",
+          },
+        );
+      },
+
+      onSuccess: async (res) => {
+        if (res.postState === "ARCHIVE") toast.success("Post archived");
+        else toast.success("Post restored");
+        await utils.post.listByUser.invalidate();
+      },
+    });
+
+  if (isLoading)
+    return <div className="w-full p-4 text-center text-lg">Loading...</div>;
   if (isError || !fetchedPost) return <div>Error loading post.</div>;
   if (!fetchedPost && !isLoading) router.push("/account");
 
   return (
     <div className="mx-auto flex w-3/5 flex-col gap-8 pt-4">
+      {post && post.postState !== "PRIVATE" && (
+        <DarkoButton
+          disabled={archivedPending || publishedPending}
+          variant="ghost"
+          className="flex h-10 w-28 items-center justify-center gap-2"
+          onClick={() => {
+            if (post.postState === "PRIVATE") {
+              toast.error("Cannot archive private posts");
+              return;
+            }
+
+            changeArchived({
+              id: post.id,
+              archive: post.postState === "PUBLIC",
+            });
+          }}
+        >
+          {archivedPending || publishedPending ? (
+            <>
+              <VscLoading className="animate-spin" />
+            </>
+          ) : post.postState === "ARCHIVE" ? (
+            <>
+              <span>Restore</span>
+            </>
+          ) : (
+            <>
+              <span>Archive</span>
+            </>
+          )}
+        </DarkoButton>
+      )}
       <div className="flex flex-col gap-2">
         <div className="flex flex-col">
           <div className="flex items-center gap-1 text-text-50 opacity-80">
@@ -142,6 +202,8 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
           <div className="flex items-center gap-1 text-text-50 opacity-80">
             {post?.postState === "PUBLIC" ? (
               <span>Public</span>
+            ) : post?.postState === "ARCHIVE" ? (
+              <span>Archived</span>
             ) : (
               <span>Private</span>
             )}
@@ -149,9 +211,10 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
         </div>
         <div className="grid grid-cols-3 gap-4">
           <input
+            disabled={post?.postState === "ARCHIVE"}
             type="text"
             placeholder="Title"
-            className="col-span-2 rounded-lg border border-secondary-800 bg-secondary-950 p-4 py-3"
+            className="col-span-2 rounded-lg border border-secondary-800 bg-secondary-950 p-4 py-3 disabled:cursor-not-allowed disabled:opacity-50"
             value={post?.title ?? ""}
             onChange={(e) => {
               setPost((prev) =>
@@ -161,9 +224,11 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
           />
           <SelectElement
             placeholder="Select a category"
+            disabled={post?.postState === "ARCHIVE"}
             options={selectOptions}
             selected={selectedOption ?? null}
             setSelected={(newSelected) => {
+              if (post?.postState === "ARCHIVE") return;
               if (newSelected) setSelectedOption(newSelected);
             }}
           />
@@ -193,7 +258,8 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
           </div>
         )}
         <UploadButton
-          className="[&>label]:bg-primary-300 [&>label]:text-text-950"
+          disabled={post?.postState === "ARCHIVE"}
+          className={`[&>label]:bg-primary-300 [&>label]:text-text-950 ${post?.postState === "ARCHIVE" && "hidden"} `}
           input={{ postId: post?.id ?? "" }}
           endpoint="imageUploader"
           onUploadBegin={() => {
@@ -239,8 +305,12 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
       {post && (
         <div className="flex w-full gap-4 [&>*]:flex-1">
           <DarkoButton
-            disabled={updatePending}
+            disabled={updatePending || post.postState === "ARCHIVE"}
             onClick={() => {
+              if (post.postState === "ARCHIVE") {
+                toast.error("Cannot modify archived posts");
+                return;
+              }
               if (post && JSON.stringify(post) !== JSON.stringify(fetchedPost))
                 updatePost({
                   title: post.title,
@@ -252,7 +322,7 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
             className="h-12 w-full"
             variant="secondary"
           >
-            <div className="flex items-center justify-center gap-1">
+            <div className="flex items-center justify-center gap-2">
               {updatePending ? (
                 <VscLoading className="animate-spin" />
               ) : (
@@ -265,7 +335,7 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
           </DarkoButton>
           <DarkoButton
             className="h-12 w-full"
-            disabled={publishedPending}
+            disabled={publishedPending || post.postState === "ARCHIVE"}
             variant="primary"
             onClick={() => {
               if (!post.category && post.postState === "PRIVATE") {
@@ -297,7 +367,7 @@ const EditPost: FC<EditPostProps> = ({ postId }) => {
             }}
           >
             <div className="flex items-center justify-center gap-2">
-              {publishedPending ? (
+              {publishedPending || archivedPending ? (
                 <VscLoading className="animate-spin" />
               ) : post.postState === "PRIVATE" ? (
                 <>

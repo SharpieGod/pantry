@@ -21,9 +21,9 @@ export const postRouter = createTRPCRouter({
           SELECT p.*,
                 MAX(similarity(p.title, ${input.query})) as relevance
           FROM "Post" p
-          WHERE p.category = ${input.filter}::"FoodCategory"
+          WHERE p."postState" = 'PUBLIC'::"PostState" AND p."category" = ${input.filter}::"FoodCategory"
           GROUP BY p.id
-          ORDER BY relevance DESC;
+          ORDER BY relevance DESC, p."publishedAt" DESC;
         `;
       }
 
@@ -31,8 +31,9 @@ export const postRouter = createTRPCRouter({
           SELECT p.*,
                 MAX(similarity(p.title, ${input.query})) as relevance
           FROM "Post" p
+          WHERE p."postState" = 'PUBLIC'::"PostState"
           GROUP BY p.id
-          ORDER BY relevance DESC;
+          ORDER BY relevance DESC, p."publishedAt" DESC;
         `;
     }),
 
@@ -125,7 +126,7 @@ export const postRouter = createTRPCRouter({
             userId: input.userId,
           },
           orderBy: {
-            createdAt: "asc",
+            createdAt: "desc",
           },
         });
       }

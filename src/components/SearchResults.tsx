@@ -17,7 +17,9 @@ const SearchResults: FC<SearchResultsProps> = ({ query, filter }) => {
 
   return (
     <div>
-      {isLoading && <span>Loading...</span>}
+      {isLoading && (
+        <div className="w-full p-4 text-center text-lg">Loading...</div>
+      )}
       <div className="mx-auto w-3/5">
         <h1 className="pb-4 text-2xl">Results for {query}</h1>
         <ul className="grid grid-cols-3 gap-8 *:w-full">

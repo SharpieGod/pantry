@@ -14,6 +14,7 @@ export type SelectElementProps = {
   selected: SelectElementOption | null;
   setSelected: (option: SelectElementOption | null) => void;
   placeholder: string;
+  disabled: boolean;
 };
 
 const SelectElement: FC<SelectElementProps> = ({
@@ -21,6 +22,7 @@ const SelectElement: FC<SelectElementProps> = ({
   selected,
   setSelected,
   placeholder,
+  disabled,
 }) => {
   const selectRef = useRef<HTMLDivElement>(null);
   const [filteredOptions, setFilteredOptions] = useState(options);
@@ -37,9 +39,12 @@ const SelectElement: FC<SelectElementProps> = ({
   return (
     <>
       <div
-        className="group relative flex w-full items-center rounded-lg border border-secondary-800 bg-secondary-950 p-3 focus-within:outline-secondary-400"
+        className={`group relative flex w-full items-center rounded-lg border border-secondary-800 bg-secondary-950 p-3 focus:outline-secondary-400 ${disabled && "cursor-not-allowed opacity-50"}`}
         tabIndex={0}
         ref={selectRef}
+        onFocus={() => {
+          if (disabled) selectRef.current?.blur();
+        }}
       >
         <span className="flex-1">
           {selected ? selected.label : placeholder}
@@ -50,7 +55,7 @@ const SelectElement: FC<SelectElementProps> = ({
           className="text-text-50 transition-transform group-focus-within:rotate-180"
         />
 
-        <div className="absolute inset-0 top-[calc(100%_+_0.5rem)] z-10 hidden h-fit max-h-[25rem] w-full flex-col overflow-hidden overflow-y-auto rounded-lg border border-secondary-800 group-focus-within:flex group-focus:flex">
+        <div className="absolute inset-0 top-[calc(100%_+_0.5rem)] z-50 hidden h-fit max-h-[25rem] w-full flex-col overflow-hidden overflow-y-auto rounded-lg border border-secondary-800 group-focus-within:flex group-focus:flex">
           <div className="flex items-center justify-between border-b border-secondary-800 bg-secondary-950 px-1 py-2">
             <input
               type="text"
@@ -62,21 +67,25 @@ const SelectElement: FC<SelectElementProps> = ({
             <AiOutlineSearch size={20} className="w-8 text-text-50" />
           </div>
 
-          {filteredOptions.map((option, i) => (
-            <div
-              className={`unselectable flex cursor-pointer items-center justify-between border-secondary-800 bg-secondary-950 ${
-                i !== filteredOptions.length - 1 && "border-b"
-              } p-3 hover:bg-secondary-900`}
-              key={i}
-              onClick={() => {
-                setSelected(option);
-                selectRef.current?.blur();
-              }}
-            >
-              <span className="unselectable">{option.label}</span>
-              {option === selected && <AiOutlineCheck />}
-            </div>
-          ))}
+          {filteredOptions
+            .sort((a, b) => a.value.localeCompare(b.value))
+            .map((option, i) => (
+              <div
+                className={`unselectable flex cursor-pointer items-center justify-between border-secondary-800 bg-secondary-950 ${
+                  i !== filteredOptions.length - 1 && "border-b"
+                } p-3 hover:bg-secondary-900`}
+                key={i}
+                onClick={() => {
+                  setSelected(option);
+                  selectRef.current?.blur();
+                }}
+              >
+                <span className="unselectable">{option.label}</span>
+                {option.value === selected?.value && (
+                  <AiOutlineCheck size={18} />
+                )}
+              </div>
+            ))}
         </div>
       </div>
     </>

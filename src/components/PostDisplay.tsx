@@ -17,7 +17,7 @@ const PostDisplay: FC<PostDisplayProps> = ({ id }) => {
   });
 
   return postLoading ? (
-    <span>Loading...</span>
+    <div className="w-full p-4 text-center text-lg">Loading...</div>
   ) : (
     <div className="mx-auto flex w-3/5 flex-col gap-4 pt-4">
       <div className="flex flex-col gap-0">
@@ -46,7 +46,7 @@ const PostDisplay: FC<PostDisplayProps> = ({ id }) => {
         <Image
           width={1000}
           height={1000}
-          className="w-1/2 rounded-lg object-cover"
+          className="max-h-[700px] w-[700px] rounded-lg object-cover"
           src={postData?.imageUrl ?? ""}
           alt={postData?.title ?? ""}
         />
