@@ -10,9 +10,10 @@ import PostCard from "./PostCard";
 
 interface PostDisplayProps {
   id: string;
+  userId: string | undefined;
 }
 
-const PostDisplay: FC<PostDisplayProps> = ({ id }) => {
+const PostDisplay: FC<PostDisplayProps> = ({ id, userId }) => {
   const { data: postData, isLoading: postLoading } = api.post.getPost.useQuery({
     id,
   });
@@ -22,6 +23,7 @@ const PostDisplay: FC<PostDisplayProps> = ({ id }) => {
       query: postData?.title ?? "",
       take: 3,
       exclude: postData?.id ?? "",
+      userId: userId,
     });
 
   return postLoading ? (

@@ -14,14 +14,27 @@ export const postRouter = createTRPCRouter({
         query: z.string(),
         take: z.number(),
         exclude: z.string(),
+        userId: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
+      if (input.userId) {
+        return await ctx.db.$queryRaw<Post[]>`
+          SELECT p.*,
+                MAX(similarity(p.title, ${input.query})) as relevance
+          FROM "Post" p
+          WHERE p."postState" = 'PUBLIC'::"PostState" AND p."id" != ${input.exclude}  AND p."userId" != ${input.userId}
+          GROUP BY p.id
+          ORDER BY relevance DESC, p."publishedAt" DESC
+          LIMIT ${input.take}
+        `;
+      }
+
       return await ctx.db.$queryRaw<Post[]>`
           SELECT p.*,
                 MAX(similarity(p.title, ${input.query})) as relevance
           FROM "Post" p
-          WHERE p."postState" = 'PUBLIC'::"PostState" AND p."id" != ${input.exclude}
+          WHERE p."postState" = 'PUBLIC'::"PostState" AND p."id" != ${input.exclude} 
           GROUP BY p.id
           ORDER BY relevance DESC, p."publishedAt" DESC
           LIMIT ${input.take}

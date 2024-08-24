@@ -6,13 +6,15 @@ import PostCard from "./PostCard";
 
 interface SearchResultsProps {
   query: string;
+  userId: string | undefined;
 }
 
-const SearchResults: FC<SearchResultsProps> = ({ query }) => {
+const SearchResults: FC<SearchResultsProps> = ({ query, userId }) => {
   const { data: results, isLoading } = api.post.searchPosts.useQuery({
     query,
     take: 12,
     exclude: "",
+    userId: userId,
   });
 
   return (
