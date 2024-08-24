@@ -8,7 +8,7 @@ const AboutPage = async () => {
   const session = await getServerAuthSession();
 
   return (
-    <div className="min-h-screen bg-[#1E1E1E] text-[#f0b090]">
+    <div className="min-h-screen bg-50 text-300">
       <Navbar />
       <div className="mx-36 mt-24">
         <h2 className="text-2xl font-bold text-[#f0b090]">Mission statement</h2>
