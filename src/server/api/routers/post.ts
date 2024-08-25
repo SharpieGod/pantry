@@ -146,16 +146,20 @@ export const postRouter = createTRPCRouter({
       });
     }),
 
-    recentPosts: publicProcedure
+  recentPosts: publicProcedure
     .input(
       z.object({
         take: z.number().optional().default(6),
-      })
+        userId: z.string().optional(),
+      }),
     )
     .query(async ({ ctx, input }) => {
       return await ctx.db.post.findMany({
         where: {
           postState: PostState.PUBLIC,
+          NOT: {
+            userId: input.userId ?? "",
+          },
         },
         orderBy: {
           publishedAt: "desc",
@@ -175,7 +179,6 @@ export const postRouter = createTRPCRouter({
         },
       });
     }),
-  
 
   changeArchiveStatus: protectedProcedure
     .input(z.object({ id: z.string(), archive: z.boolean() }))

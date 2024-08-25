@@ -1,6 +1,12 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { motion, useMotionValue } from "framer-motion";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { api } from "~/trpc/react";
@@ -19,11 +25,15 @@ const SPRING_OPTIONS = {
   damping: 50,
 };
 
-export const SwipeCarousel = () => {
+interface SwipeCarouselProps {
+  userId?: string;
+}
+
+export const SwipeCarousel: FC<SwipeCarouselProps> = ({ userId }) => {
   const [imgIndex, setImgIndex] = useState(0);
 
   const { data: posts = [], isPending: postsPending } =
-    api.post.recentPosts.useQuery({ take: 6 });
+    api.post.recentPosts.useQuery({ take: 6, userId });
 
   const dragX = useMotionValue(0);
 
@@ -147,7 +157,7 @@ const Images = ({
               {/* Display the post title or other details */}
 
               <div className="flex flex-col">
-                <span>
+                <span className="text-xl">
                   {post.category ? FoodCategoryReadable[post.category] : ""}
                 </span>
                 <h2 className="text-2xl">{post.title}</h2>
