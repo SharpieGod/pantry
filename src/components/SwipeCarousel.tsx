@@ -5,6 +5,8 @@ import { motion, useMotionValue } from "framer-motion";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { api } from "~/trpc/react";
 import { Post } from "@prisma/client";
+import Image from "next/image";
+import { FoodCategoryReadable } from "~/types";
 
 const ONE_SECOND = 1000;
 const AUTO_DELAY = ONE_SECOND * 10;
@@ -20,7 +22,8 @@ const SPRING_OPTIONS = {
 export const SwipeCarousel = () => {
   const [imgIndex, setImgIndex] = useState(0);
 
-  const { data: posts = [] } = api.post.recentPosts.useQuery({ take: 6 });
+  const { data: posts = [], isPending: postsPending } =
+    api.post.recentPosts.useQuery({ take: 6 });
 
   const dragX = useMotionValue(0);
 
@@ -58,6 +61,9 @@ export const SwipeCarousel = () => {
       setImgIndex((prev) => prev - 1);
     }
   };
+
+  if (postsPending)
+    return <div className="w-full p-4 text-center text-lg">Loading...</div>;
 
   return (
     <div className="relative flex justify-center overflow-hidden py-8">
@@ -124,20 +130,28 @@ const Images = ({
         return (
           <motion.div
             key={post.id}
-            style={{
-              backgroundImage: `url(${post.imageUrl ?? "/placeholder.webp"})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
             animate={{
               scale: imgIndex === idx ? 0.95 : 0.85,
             }}
             transition={SPRING_OPTIONS}
-            className="relative aspect-video w-full shrink-0 rounded-xl bg-neutral-800 object-cover"
+            className="relative aspect-video h-[600px] w-full shrink-0 rounded-lg"
           >
-            {/* Display the post title or other details */}
-            <div className="absolute bottom-4 left-4 text-white">
-              <h2>{post.title}</h2>
+            <div className="flex flex-col gap-2">
+              <Image
+                src={post.imageUrl ?? ""}
+                alt={post.title}
+                width={1000}
+                height={1000}
+                className="max-h-[580px] w-full flex-1 rounded-lg object-cover"
+              />
+              {/* Display the post title or other details */}
+
+              <div className="flex flex-col">
+                <span>
+                  {post.category ? FoodCategoryReadable[post.category] : ""}
+                </span>
+                <h2 className="text-2xl">{post.title}</h2>
+              </div>
             </div>
 
             {/* Clickable areas for navigating left and right */}
